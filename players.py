@@ -3,7 +3,7 @@ import util
 from util import Card
 from util import Suit
 
-class RandomPlayer(util.basePlayer):
+class RandomPlayer(util.basePlayer): #plays randomly
 
     def __init__(self) -> None:
         super()
@@ -29,6 +29,7 @@ class AIPlayer(util.basePlayer):
 
         #k/(13-n)
 
+        #considers the high spades in your hand
         highSpades = [Card(1, Suit.Spades), Card(13, Suit.Spades), Card(12, Suit.Spades), Card(11, Suit.Spades)] #ace, king, queen, jack
         subsetSpades = util.subsetOfSuit(hand, Suit.Spades)
         protectors = []
@@ -40,8 +41,9 @@ class AIPlayer(util.basePlayer):
             numProtectorsNeeded = 14 - card.value
             if card in hand and numProtectorsNeeded <= len(protectors):
                 tricks += 1
-                del protectors[:numProtectorsNeeded]
+                del protectors[:numProtectorsNeeded] #delete the number of protectors needed from the protectors list
         
+        #considers whether you have a high number of spades
         if len(subsetSpades) > 4:
             tricks += len(subsetSpades) - 4
         #each additional spade is likely to be a trick
@@ -51,6 +53,7 @@ class AIPlayer(util.basePlayer):
 
     def getBid(self, state: dict) -> int:
         previousBids = state["previousBids"]
+        #TODO: implement most of the algorithm
 
         PT, SC = self.precomputeData(state)
 
