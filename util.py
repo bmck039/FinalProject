@@ -22,6 +22,11 @@ class Card: #representation of a card
     
     def __repr__(self) -> str: #allows for the toString method to be called when Card is embedded within a collection of objects (like a List)
         return self.__str__()
+    
+    def __eq__(self, __value: object) -> bool:
+        if not isinstance(__value, self.__class__): return False
+        return self.value == __value.value and self.suit == __value.suit
+
 
 class Player(ABC): #interface describing the basic requirements of a player
     @abstractmethod
@@ -53,7 +58,13 @@ class Rules(ABC): #interface for an object that controls the evolution of a game
     def setupGame(n: int) -> dict:
         pass
 
-    #TODO: isWon(state[]) -> bool
+    @abstractmethod
+    def compareCards(c1: Card, c2: Card) -> int:
+        pass
+
+    @abstractmethod
+    def isWon(state: dict) -> bool:
+        pass
 
 class basePlayer: #handles the basic operations of creating a player
     def __init__(self) -> None:
@@ -66,6 +77,12 @@ class basePlayer: #handles the basic operations of creating a player
     def setRules(self, rules: Rules):
         self.rules = rules
 
+    def returnCard(self, card: Card):
+        self.hand.append(card)
+
+    def update(score: int):
+        pass
+
 class Game(): #class representing a game. Written generally so all of the game-playing details are contained in a Rules object
     def __init__(self, rules: Rules, players: list[Player]):
         self.rules = rules
@@ -76,6 +93,12 @@ class Game(): #class representing a game. Written generally so all of the game-p
     
     def playTurn(self):
         self.state = self.rules.playTurn(self.players, self.state)
+        self.state = self.rules.setupRound(self.players, self.state)
+
+    def playUntilWin(self):
+        while(not self.rules.isWon(self.state)):
+            self.playTurn()
+
 
     
 class Spades(Rules): #implementation of Rules for the game Spades
@@ -83,7 +106,7 @@ class Spades(Rules): #implementation of Rules for the game Spades
     def validMoves(hand: list[Card], state: dict) -> list:
         discardPile = state["discardPile"]
         if(len(discardPile) > 0):
-            leadSuit = discardPile[-1].suit #suit of last card in the discard pile
+            leadSuit = discardPile[0].suit #suit of first card in the discard pile
             leadSuitCards = subsetOfSuit(hand, leadSuit)
             if(len(leadSuitCards) > 0):
                 #must follow suit if you can
@@ -93,8 +116,9 @@ class Spades(Rules): #implementation of Rules for the game Spades
                 return hand
         else: #your lead
             moves = []
-            if(state["spadesBroken"]):
-                moves += subsetOfSuit(hand, Suit.Spades) #if spades are broken, then playing one at the start is allowed
+            subsetSpades = subsetOfSuit(hand, Suit.Spades)
+            if(state["spadesBroken"] or (len(hand) - len(subsetSpades)) == 0):
+                moves += subsetSpades #if spades are broken or you cannot play a different card, then playing one at the start is allowed
             moves += subsetOfSuit(hand, Suit.Hearts)
             moves += subsetOfSuit(hand, Suit.Clubs)
             moves += subsetOfSuit(hand, Suit.Diamonds)
@@ -104,34 +128,106 @@ class Spades(Rules): #implementation of Rules for the game Spades
         return move in Spades.validMoves(hand, gameState)
 
     def generateHands(n: int) -> list[Card]:
-        deck = [Card(i + 1, suit) for i in range(13) for suit in list(Suit)]
+        deck = [Card(i, suit) for i in range(1, 13) for suit in list(Suit)]
         random.shuffle(deck)
 
         return np.array_split(deck, n)
     
-    def setupGame(players: list[Player]) -> dict: #initializes the state of the game when it's the start
+    def compareCards(c1: Card, c2: Card) -> int: #1 if c1 > c2, -1 if c1 < c2, 0 if indeterminant
+        if(c1.value == 0): return -1
+        if(c2.value == 0): return 1
+        if(c1.suit == c2.suit): return 1 if c1.value < c2.value else -1
+        #if the suits aren't the same and one is a spade, the spade wins
+        if(c1.suit == Suit.Spades): return 1
+        if(c2.suit == Suit.Spades): return -1
+        #indeterminant
+        return 0
+    
+    def dealCards(players: list[Player], state: dict) -> dict:
         numPlayers = len(players)
         hands = Spades.generateHands(numPlayers)
-        state = {}
-        state["start"] = 0
+        for i in range(numPlayers):
+            players[i].dealHand(list(hands[i]))
+            players[i].setRules(Spades)
+            state["bids"].append(players[i].getBid(state))
+        return state
+
+    def setupRound(players: list[Player], state: dict) -> dict:
+        numPlayers = len(players)
         state["discardPile"] = []
         state["spadesBroken"] = False
-        state["previousBids"] = []
+        state["bids"] = []
+        state["tricks"] = [0 for n in range(numPlayers)]
+        state = Spades.dealCards(players, state)
+        return state
+
+    def setupGame(players: list[Player]) -> dict: #initializes the state of the game when it's the start
+        numPlayers = len(players)
+        state = {}
+        state["start"] = 0
+        state["isWon"] = False
         state["scores"] = [0 for n in range(numPlayers)]
-        for i in range(numPlayers):
-            players[i].dealHand(hands[i])
-            players[i].setRules(Spades)
-            state["previousBids"].append(players[i].getBid(state))
-            print(state["previousBids"])
-            print(players[i].hand)
+        state["bags"] = [0 for n in range(numPlayers)]
+        state = Spades.setupRound(players, state)
         return state
     
-    def playTurn(players: list[Player], state: dict) -> int:
+    def updateScores(state: dict) -> dict:
+        for i in range(len(state["tricks"])):
+            numTricks = state["tricks"][i]
+            numBid = state["bids"][i]
+            scoreWeight = 10
+            scoreSign = 1
+            if numBid == 0: 
+                scoreWeight = 100
+                scoreSign = -1 if numTricks != 0 else 1
+                state["scores"][i] += scoreWeight * scoreSign
+            else:
+                scoreSign = -1 if numTricks < numBid else 1
+                state["scores"][i] += scoreWeight * numBid * scoreSign
+            if(scoreSign > 0 or numBid == 0): #if you made your bid or bid nil
+                state["bags"][i] += numTricks - numBid
+            if(state["bags"][i] >= 5):
+                while(state["bags"][i] >= 5):
+                    state["scores"][i] -= 50
+                    state["bags"][i] -= 5
+        return state
+    
+    def playRound(players: list[Player], state: dict) -> dict:
         orderedPlayers = players[state["start"] : -1] + players[0 : state["start"]]
+        highestCard = Card(0, Suit.Hearts)
         for p in orderedPlayers:
             card = p.play(state)
-            if(Spades.isValidMove(p.hand, state, card)):
-                state["discardPile"] += [card]
-            #TODO: if the move is not valid, make the player choose a different move
-
+            while not (Spades.isValidMove(p.hand, state, card)):
+                p.returnCard(card)
+                card = p.play(state)
+            state["discardPile"].append(card)
+            if(card.suit == Suit.Spades and not state["spadesBroken"]): state["spadesBroken"] = True
+            p.hand.remove(card)
+            if(Spades.compareCards(card, highestCard) > 0):
+                highestCard = card
+        playerIndex = state["discardPile"].index(highestCard)
+        state["tricks"][playerIndex] += 1
+        state["discardPile"] = []
+        return state
+    
+    def playTurn(players: list[Player], state: dict) -> dict: #returns the state after the current turn
+        while(not Spades.isTurnOver(state)):
+            state = Spades.playRound(players, state)
+        state = Spades.updateScores(state)
+        if(Spades.isWon(state)): 
+            for i in range(len(players)):
+                players[i].update(state["score"])
         print(state)
+        return state
+    
+    def isTurnOver(state: dict) -> bool:
+        numTurns = 0
+        for tricks in state["tricks"]:
+            numTurns += tricks
+        return numTurns == 12
+    
+    def isWon(state: dict) -> bool:
+        for score in state["scores"]:
+            if score >= 500: return True
+        return False
+    
