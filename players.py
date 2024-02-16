@@ -52,7 +52,7 @@ class AIPlayer(util.basePlayer):
 
 
     def getBid(self, state: dict) -> int:
-        previousBids = state["previousBids"]
+        previousBids = state["bids"]
         #TODO: implement most of the algorithm
 
         PT, SC = self.precomputeData(state)
