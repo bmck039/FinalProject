@@ -7,5 +7,4 @@ for i in range(4):
 
 #creates a game with 4 random players
 game = util.Game(util.Spades, playersList)
-
 game.playTurn()
