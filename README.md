@@ -6,7 +6,7 @@ This represents the card game Spades, implemented in such a way as to make other
 python -m pip install numpy torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 ```
 
-### Run using the command
+### Run
 ```
 python play.py
 ```
