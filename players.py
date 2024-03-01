@@ -49,7 +49,7 @@ class AIPlayer(util.basePlayer):
 
     def __init__(self) -> None:
         super()
-        self.model = AI.cardPlayingAgent()
+        self.model = AI.CardPlayingAgent()
     
     def getPrecomputedData(self, state: dict) -> tuple[list[list[float]], callable]:
         learnedFunction = lambda x, y: x 
@@ -146,7 +146,7 @@ class AIPlayer(util.basePlayer):
 
     def getBid(self, state: dict) -> int:
         previousBids = state["bids"]
-        #TODO: implement most of the algorithm
+        #TODO: implement nil part of the algorithm
 
         PT, SC = self.getPrecomputedData(state)
 
