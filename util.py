@@ -80,7 +80,7 @@ class basePlayer: #handles the basic operations of creating a player
     def returnCard(self, card: Card):
         self.hand.append(card)
 
-    def update(score: int):
+    def update(self, score: int):
         pass
 
 class Game(): #class representing a game. Written generally so all of the game-playing details are contained in a Rules object
