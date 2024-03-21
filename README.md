@@ -3,7 +3,7 @@ This represents the card game Spades, implemented in such a way as to make other
 
 ### Setup
 ```
-python -m pip install numpy torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+python -m pip install numpy torch stable-baselines3 --index-url https://download.pytorch.org/whl/cu121
 ```
 
 ### Run
@@ -15,7 +15,7 @@ python play.py
 Bidding Algorithm: https://ecai2020.eu/papers/235_paper.pdf
 
 ## ToDo
-- [x] Complete Bidding Algorithm (AIPlayer.getBid(state)) in [players.py](/players.py)
+- [ ] Complete Bidding Algorithm (AIPlayer.getBid(state)) in [players.py](/players.py)
 - [ ] Implement AIPlayer.play(state) in [players.py](/players.py)
 - [x] Make Spades object track points [util.py](/util.py)
 - [x] create isWon(state) method on Rules interface and implement in Spades object [util.py](/util.py)
