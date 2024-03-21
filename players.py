@@ -45,27 +45,31 @@ probabilityTable = [
     [0.227, 0, 0],
 ]
 
+def onePlyEval(rules: util.Rules, hand: list[Card], state: dict) -> Card:
+    validMoves = rules.validMoves(hand, state)
+    model = AI.CardPlayingAgent()
+
+    evaluations = []
+    for move in validMoves:
+        evaluations.append(model.evaluateMove(state["discardPile"], move))
+    
+    maxEval = max(evaluations)
+    maxEvalIndex = evaluations.index(maxEval)
+
+    return validMoves[maxEvalIndex]
+
 class AIPlayer(util.basePlayer):
 
-    def __init__(self) -> None:
+    def __init__(self, playFunction: function) -> None:
         super()
-        self.model = AI.CardPlayingAgent()
+        self.playFunction = playFunction
     
     def getPrecomputedData(self, state: dict) -> tuple[list[list[float]], callable]:
         learnedFunction = lambda x, y: x 
         return probabilityTable, learnedFunction
     
     def play(self, state: dict) -> Card:
-        validMoves = self.rules.validMoves(self.hand, state)
-
-        evaluations = []
-        for move in validMoves:
-            evaluations.append(self.model.evaluateMove(state["discardPile"], move))
-        
-        maxEval = max(evaluations)
-        maxEvalIndex = evaluations.index(maxEval)
-
-        return validMoves[maxEvalIndex]
+        return self.playFunction(self.rules, self.hand, state)
     
     def update(self, score: int):
         pass
