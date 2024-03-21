@@ -2,6 +2,8 @@ from enum import Enum
 import random
 import numpy as np
 from abc import ABC, abstractmethod
+import gymnasium as gym
+from gym import spaces
 
 class Suit(Enum):
     Spades = 4
@@ -26,6 +28,9 @@ class Card: #representation of a card
     def __eq__(self, __value: object) -> bool:
         if not isinstance(__value, self.__class__): return False
         return self.value == __value.value and self.suit == __value.suit
+    
+    def asTuple(self):
+        return (self.value, self.suit)
 
 
 class Player(ABC): #interface describing the basic requirements of a player
@@ -84,7 +89,8 @@ class basePlayer: #handles the basic operations of creating a player
         pass
 
 class Game(): #class representing a game. Written generally so all of the game-playing details are contained in a Rules object
-    def __init__(self, rules: Rules, players: list[Player]):
+    def __init__(self, rules: Rules, players: list[Player], seed: int = None):
+        if(seed != None): random.seed(seed)
         self.rules = rules
         self.players = []
         for p in players:
@@ -133,14 +139,14 @@ class Spades(Rules): #implementation of Rules for the game Spades
 
         return np.array_split(deck, n)
     
-    def compareCards(c1: Card, c2: Card) -> int: #1 if c1 > c2, -1 if c1 < c2, 0 if indeterminant
+    def compareCards(c1: Card, c2: Card) -> int: #1 if c1 > c2, -1 if c1 < c2, 0 if indeterminate
         if(c1.value == 0): return -1
         if(c2.value == 0): return 1
         if(c1.suit == c2.suit): return 1 if c1.value < c2.value else -1
         #if the suits aren't the same and one is a spade, the spade wins
         if(c1.suit == Suit.Spades): return 1
         if(c2.suit == Suit.Spades): return -1
-        #indeterminant
+        #indeterminate
         return 0
     
     def dealCards(players: list[Player], state: dict) -> dict:
@@ -158,6 +164,7 @@ class Spades(Rules): #implementation of Rules for the game Spades
         state["spadesBroken"] = False
         state["bids"] = []
         state["tricks"] = [0 for n in range(numPlayers)]
+        state["seenCards"] = []
         state = Spades.dealCards(players, state)
         return state
 
@@ -201,11 +208,13 @@ class Spades(Rules): #implementation of Rules for the game Spades
                 p.returnCard(card)
                 card = p.play(state)
             state["discardPile"].append(card)
+            state["seenCards"].append(card)
             if(card.suit == Suit.Spades and not state["spadesBroken"]): state["spadesBroken"] = True
             p.hand.remove(card)
             if(Spades.compareCards(card, highestCard) > 0):
                 highestCard = card
         playerIndex = state["discardPile"].index(highestCard)
+        state["start"] = playerIndex
         state["tricks"][playerIndex] += 1
         state["discardPile"] = []
         return state
@@ -217,7 +226,6 @@ class Spades(Rules): #implementation of Rules for the game Spades
         if(Spades.isWon(state)): 
             for i in range(len(players)):
                 players[i].update(state["score"])
-        print(state)
         return state
     
     def isTurnOver(state: dict) -> bool:
@@ -231,3 +239,10 @@ class Spades(Rules): #implementation of Rules for the game Spades
             if score >= 500: return True
         return False
     
+class GameGym(Game, gym.Env):
+    def __init__(self) -> None:
+        super(GameGym, self).__init__()
+        #the agent can play any of the 7 cards in its hand. the action returned will be an int representing the index of the card to play
+        self.action_space = spaces.MultiBinary(52, start=0)
+        #observation space is a binary list of length 52 representing the cards in current hand. a binary list of length 52 for the cards currently in the discard pile (same card representation as for the current hand), a list of 52 bits for cards seen, an int for the number your team bid, an int for the number of tricks you currently have, and an int for the number of bags your team has
+        self.observation_space = spaces.Tuple(spaces.MultiBinary(52), spaces.MultiBinary(52), spaces.MultiBinary(52), spaces.Discrete(3), spaces.MultiBinary(1))
