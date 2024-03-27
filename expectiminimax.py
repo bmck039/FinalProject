@@ -1,10 +1,6 @@
-import random
-
 from util import Card
 from util import Suit
 from players import PlayingClass
-
-import stable_baselines3
 
 class ExpectiMiniMax(PlayingClass):
     def __init__(self) -> None:
@@ -14,8 +10,6 @@ class ExpectiMiniMax(PlayingClass):
         discardPile += [move]
         # TODO
 
-    def play(rules, hand, state): #returns a valid move
-        pass
-
-
-    # def updateModel(state, action, reward):
+    def play(rules, hand, state) -> Card: #returns a valid move
+        discardPile = state["discardPile"]
+        playerIndex = len(discardPile)
