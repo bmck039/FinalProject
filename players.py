@@ -1,6 +1,6 @@
 import random
 import util
-import AI
+import expectiminimax
 from abc import ABC, abstractmethod
 from util import Card
 from util import Suit
@@ -48,7 +48,7 @@ probabilityTable = [
 
 def onePlyEval(rules: util.Rules, hand: list[Card], state: dict) -> Card:
     validMoves = rules.validMoves(hand, state)
-    model = AI.CardPlayingAgent()
+    model = expectiminimax.CardPlayingAgent()
 
     evaluations = []
     for move in validMoves:
@@ -59,18 +59,23 @@ def onePlyEval(rules: util.Rules, hand: list[Card], state: dict) -> Card:
 
     return validMoves[maxEvalIndex]
 
+class PlayingClass(ABC): #interface for different methods of play
+    @abstractmethod
+    def play(rules, hand, state):
+        pass
+
 class AIPlayer(util.basePlayer):
 
-    def __init__(self, playFunction) -> None:
+    def __init__(self, playingClass) -> None:
         super()
-        self.playFunction = playFunction
+        self.playingCLass = playingClass
     
     def getPrecomputedData(self, state: dict) -> tuple[list[list[float]], callable]:
         learnedFunction = lambda x, y: x 
         return probabilityTable, learnedFunction
     
     def play(self, state: dict) -> Card:
-        return self.playFunction(self.rules, self.hand, state)
+        return self.playingCLass.play(self.rules, self.hand, state)
     
     def update(self, score: int):
         pass
