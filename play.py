@@ -13,10 +13,6 @@ for i in range(4):
 
 #creates a game with 4 AI players
 
-bids0 = []
-bids1 = []
-bids2 = []
-bids3 = []
 game = util.Game(util.Spades, playersList)
 print(game.state["bids"])
 # game.playTurn()
