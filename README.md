@@ -4,11 +4,11 @@ This represents the card game Spades, implemented in such a way as to make other
 ### Setup
 * #### Macos or Windows (without Nvidia GPU):
 ```
-python -m pip install numpy torch stable-baselines3
+python -m pip install numpy torch stable-baselines3 gymnasium
 ```
 * #### Windows (With Nvidia GPU):
 ```
-python -m pip install numpy torch stable-baselines3 --index-url https://download.pytorch.org/whl/cu121
+python -m pip install numpy torch stable-baselines3 gymnasium --index-url https://download.pytorch.org/whl/cu121
 ```
 
 ### Run
