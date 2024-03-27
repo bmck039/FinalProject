@@ -1,6 +1,6 @@
 import random
 import util
-import expectiminimax
+# import expectiminimax
 from abc import ABC, abstractmethod
 from util import Card
 from util import Suit
@@ -46,23 +46,28 @@ probabilityTable = [
     [0.227, 0, 0],
 ]
 
-def onePlyEval(rules: util.Rules, hand: list[Card], state: dict) -> Card:
-    validMoves = rules.validMoves(hand, state)
-    model = expectiminimax.CardPlayingAgent()
+# def onePlyEval(rules: util.Rules, hand: list[Card], state: dict) -> Card:
+#     validMoves = rules.validMoves(hand, state)
+#     model = expectiminimax.CardPlayingAgent()
 
-    evaluations = []
-    for move in validMoves:
-        evaluations.append(model.evaluateMove(state["discardPile"], move))
+#     evaluations = []
+#     for move in validMoves:
+#         evaluations.append(model.evaluateMove(state["discardPile"], move))
     
-    maxEval = max(evaluations)
-    maxEvalIndex = evaluations.index(maxEval)
+#     maxEval = max(evaluations)
+#     maxEvalIndex = evaluations.index(maxEval)
 
-    return validMoves[maxEvalIndex]
+#     return validMoves[maxEvalIndex]
 
 class PlayingClass(ABC): #interface for different methods of play
     @abstractmethod
     def play(rules, hand, state):
         pass
+
+class RandomPlay(PlayingClass):
+    def play(rules, hand, state):
+        moves = rules.validMoves(hand, state)
+        return random.choice(moves)
 
 class AIPlayer(util.basePlayer):
 
