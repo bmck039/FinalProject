@@ -1,6 +1,7 @@
 import random
 import util
 import AI
+from abc import ABC, abstractmethod
 from util import Card
 from util import Suit
 
@@ -60,7 +61,7 @@ def onePlyEval(rules: util.Rules, hand: list[Card], state: dict) -> Card:
 
 class AIPlayer(util.basePlayer):
 
-    def __init__(self, playFunction: function) -> None:
+    def __init__(self, playFunction) -> None:
         super()
         self.playFunction = playFunction
     
