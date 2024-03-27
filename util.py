@@ -178,25 +178,30 @@ class Spades(Rules): #implementation of Rules for the game Spades
         state = Spades.setupRound(players, state)
         return state
     
+    def scoreFromState(state: dict, i: int) -> dict:
+        scoreChange = 0
+        numTricks = state["tricks"][i]
+        numBid = state["bids"][i]
+        scoreWeight = 10
+        scoreSign = 1
+        if numBid == 0: 
+            scoreWeight = 100
+            scoreSign = -1 if numTricks != 0 else 1
+            scoreChange += scoreWeight * scoreSign
+        else:
+            scoreSign = -1 if numTricks < numBid else 1
+            scoreChange += scoreWeight * numBid * scoreSign
+        if(scoreSign > 0 or numBid == 0): #if you made your bid or bid nil
+            state["bags"][i] += numTricks - numBid
+        if(state["bags"][i] >= 5):
+            while(state["bags"][i] >= 5):
+                scoreChange -= 50
+                state["bags"][i] -= 5
+        return scoreChange
+    
     def updateScores(state: dict) -> dict:
         for i in range(len(state["tricks"])):
-            numTricks = state["tricks"][i]
-            numBid = state["bids"][i]
-            scoreWeight = 10
-            scoreSign = 1
-            if numBid == 0: 
-                scoreWeight = 100
-                scoreSign = -1 if numTricks != 0 else 1
-                state["scores"][i] += scoreWeight * scoreSign
-            else:
-                scoreSign = -1 if numTricks < numBid else 1
-                state["scores"][i] += scoreWeight * numBid * scoreSign
-            if(scoreSign > 0 or numBid == 0): #if you made your bid or bid nil
-                state["bags"][i] += numTricks - numBid
-            if(state["bags"][i] >= 5):
-                while(state["bags"][i] >= 5):
-                    state["scores"][i] -= 50
-                    state["bags"][i] -= 5
+            state["scores"][i] += Spades.scoreFromState(state, i)
         return state
     
     def playRound(players: list[Player], state: dict) -> dict:
@@ -239,10 +244,14 @@ class Spades(Rules): #implementation of Rules for the game Spades
             if score >= 500: return True
         return False
     
-class GameGym(Game, gym.Env):
+class SpadesGym(Game, gym.Env):
     def __init__(self) -> None:
-        super(GameGym, self).__init__()
-        #the agent can play any of the 7 cards in its hand. the action returned will be an int representing the index of the card to play
+        super(SpadesGym, self).__init__()
+        #the agent can play any of the 7 cards in its hand. the action returned will be a representation of the card to play
         self.action_space = spaces.MultiBinary(52, start=0)
         #observation space is a binary list of length 52 representing the cards in current hand. a binary list of length 52 for the cards currently in the discard pile (same card representation as for the current hand), a list of 52 bits for cards seen, an int for the number your team bid, an int for the number of tricks you currently have, and an int for the number of bags your team has
         self.observation_space = spaces.Tuple(spaces.MultiBinary(52), spaces.MultiBinary(52), spaces.MultiBinary(52), spaces.Discrete(3), spaces.MultiBinary(1))
+
+    def step(self, action: int) -> tuple[dict, float, bool, bool, dict[str, Any]]:
+        card = getCardFromIndex(action)
+        if( not Spades.isValidMove()): return 
