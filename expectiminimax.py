@@ -19,3 +19,52 @@ class ExpectiMiniMax(PlayingClass):
     def play(rules, hand, state) -> Card: #returns a valid move
         discardPile = state["discardPile"]
         playerIndex = len(discardPile)
+            
+    
+    def play(rules, hand, state): #returns a valid move
+        pass
+
+
+    # def updateModel(state, action, reward):
+
+
+def ExpectimaxAgent(gameState):
+ 
+        value, move = maxValue(gameState, 0, 0)
+        return move
+        
+def maxValue(self, gameState, depth, turn):
+        agentIndex = turn % gameState.getNumAgents()
+        if (gameState.isWin() or (depth > (self.depth * gameState.getNumAgents()) - 1) or gameState.isLose()):
+            return self.evaluationFunction(gameState), None
+        v = float("-inf")
+        move = None
+        for action in gameState.getLegalActions(agentIndex):
+            successor = gameState.generateSuccessor(agentIndex, action)
+            v2, a2 = self.maxOrMin(successor, depth + 1, turn + 1)
+            if v2 > v:
+                v, move = v2, action
+        return v, move
+    
+def minValue(self, gameState, depth, turn):
+        agentIndex = turn % gameState.getNumAgents()
+        if (gameState.isWin() or (depth > (self.depth * gameState.getNumAgents()) - 1) or gameState.isLose()):
+            return self.evaluationFunction(gameState), None
+        v = float("inf")
+        move = None
+        numSuccessors = 0
+        total = 0
+        for action in gameState.getLegalActions(agentIndex):
+            successor = gameState.generateSuccessor(agentIndex, action)
+            v2, a2 = self.maxOrMin(successor, depth + 1, turn + 1)
+            total += v2
+            numSuccessors += 1
+        return (1/numSuccessors)*total, move
+    
+def maxOrMin(self, gameState, depth, turn):
+        agentIndex = turn % gameState.getNumAgents()
+        if agentIndex == 0:
+            return self.maxValue(gameState, depth, turn)
+        else:
+            return self.minValue(gameState, depth, turn)
+        util.raiseNotDefined()
