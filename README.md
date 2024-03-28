@@ -17,7 +17,8 @@ python play.py
 ```
 
 ## Resources: 
-Bidding Algorithm: https://ecai2020.eu/papers/235_paper.pdf
+- Bidding Algorithm: https://ecai2020.eu/papers/235_paper.pdf
+- Monte Carlo Tree Search: https://ai-boson.github.io/mcts/
 
 ## ToDo
 - [ ] Complete Bidding Algorithm (AIPlayer.getBid(state)) in [players.py](/players.py)

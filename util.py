@@ -133,8 +133,11 @@ class Spades(Rules): #implementation of Rules for the game Spades
     def isValidMove(hand: list[Card], gameState: dict, move: Card) -> bool:
         return move in Spades.validMoves(hand, gameState)
 
+    def generateDeck():
+        return [Card(i, suit) for i in range(1, 13) for suit in list(Suit)]
+
     def generateHands(n: int) -> list[Card]:
-        deck = [Card(i, suit) for i in range(1, 13) for suit in list(Suit)]
+        deck = Spades.generateDeck()
         random.shuffle(deck)
 
         return np.array_split(deck, n)
@@ -206,22 +209,35 @@ class Spades(Rules): #implementation of Rules for the game Spades
     
     def playRound(players: list[Player], state: dict) -> dict:
         orderedPlayers = players[state["start"] : -1] + players[0 : state["start"]]
-        highestCard = Card(0, Suit.Hearts)
+        state["highestCard"] = Card(0, Suit.Hearts)
         for p in orderedPlayers:
+            card, state = Spades.playerTurnTransition(p, state)
+        playerIndex = state["discardPile"].index(state["highestCard"])
+        state = Spades.roundEnd(players, state, playerIndex)
+        return state
+    
+    def playerTurnTransition(p, state):
+        card = p.play(state)
+        while not (Spades.isValidMove(p.hand, state, card)):
+            p.returnCard(card)
             card = p.play(state)
-            while not (Spades.isValidMove(p.hand, state, card)):
-                p.returnCard(card)
-                card = p.play(state)
-            state["discardPile"].append(card)
-            state["seenCards"].append(card)
-            if(card.suit == Suit.Spades and not state["spadesBroken"]): state["spadesBroken"] = True
-            p.hand.remove(card)
-            if(Spades.compareCards(card, highestCard) > 0):
-                highestCard = card
-        playerIndex = state["discardPile"].index(highestCard)
+        state = Spades.playerMove(state, p, card)
+        highestCard = state["highestCard"]
+        if(Spades.compareCards(card, highestCard) > 0):
+            highestCard = state["highestCard"]
+        return card, state
+
+    def roundEnd(players, state, playerIndex):
         state["start"] = playerIndex
         state["tricks"][playerIndex] += 1
         state["discardPile"] = []
+        return state
+
+    def playerMove(state, p, card):
+        state["discardPile"].append(card)
+        state["seenCards"].append(card)
+        if(card.suit == Suit.Spades and not state["spadesBroken"]): state["spadesBroken"] = True
+        p.hand.remove(card)
         return state
     
     def playTurn(players: list[Player], state: dict) -> dict: #returns the state after the current turn
