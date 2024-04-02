@@ -60,6 +60,12 @@ probabilityTable = [
 #     return validMoves[maxEvalIndex]
 
 class PlayingClass(ABC): #interface for different methods of play
+
+    @abstractmethod
+    def __init__(self, hand) -> None:
+        super().__init__()
+        self.hand = hand
+
     @abstractmethod
     def play(rules, hand, state):
         pass
@@ -71,9 +77,9 @@ class RandomPlay(PlayingClass):
 
 class AIPlayer(util.basePlayer):
 
-    def __init__(self, playingClass) -> None:
+    def __init__(self, playingClass: PlayingClass) -> None:
         super()
-        self.playingCLass = playingClass
+        self.playingCLass = playingClass(self.hand)
     
     def getPrecomputedData(self, state: dict) -> tuple[list[list[float]], callable]:
         learnedFunction = lambda x, y: x 

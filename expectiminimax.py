@@ -3,8 +3,9 @@ from util import Suit
 from players import PlayingClass
 
 class ExpectiMiniMax(PlayingClass):
-    def __init__(self) -> None:
+    def __init__(self, hand) -> None:
         super()
+        self.hand = hand
 
     def evaluateMove(discardPile: list[Card], move: Card, rules, state, playerIndex):
         for card in discardPile:
