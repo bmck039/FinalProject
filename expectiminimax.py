@@ -5,7 +5,6 @@ from players import PlayingClass
 class ExpectiMiniMax(PlayingClass):
     def __init__(self, hand) -> None:
         super()
-        self.hand = hand
 
     def evaluateMove(discardPile: list[Card], move: Card, rules, state, playerIndex):
         for card in discardPile:
@@ -21,7 +20,15 @@ class ExpectiMiniMax(PlayingClass):
         discardPile = state["discardPile"]
         playerIndex = len(discardPile)
             
-    
+    def probability(self,card,state):
+         if card  in state['discardPile']:
+              return 0
+         elif card in state['seenCards']:
+              return 1
+         elif card in self.hand:
+              return 1
+         else:
+              return 1/(52-(len(state['seenCards'])-len(self.hand)))
     def play(rules, hand, state): #returns a valid move
         pass
 
@@ -63,7 +70,7 @@ def minValue(self, gameState, depth, turn):
         return (1/numSuccessors)*total, move
     
 def maxOrMin(self, gameState, depth, turn):
-        agentIndex = turn % gameState.getNumAgents()
+        agentIndex = turn % 4
         if agentIndex == 0:
             return self.maxValue(gameState, depth, turn)
         else:

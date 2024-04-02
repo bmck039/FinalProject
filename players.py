@@ -61,9 +61,7 @@ probabilityTable = [
 
 class PlayingClass(ABC): #interface for different methods of play
 
-    @abstractmethod
     def __init__(self, hand) -> None:
-        super().__init__()
         self.hand = hand
 
     @abstractmethod
