@@ -224,7 +224,7 @@ class Spades(Rules): #implementation of Rules for the game Spades
         state = Spades.playerMove(state, p, card)
         highestCard = state["highestCard"]
         if(Spades.compareCards(card, highestCard) > 0):
-            highestCard = state["highestCard"]
+            state["highestCard"] = card
         return card, state
 
     def roundEnd(players, state, playerIndex):
