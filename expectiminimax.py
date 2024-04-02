@@ -5,7 +5,7 @@ from players import PlayingClass
 class ExpectiMiniMax(PlayingClass):
     def __init__(self) -> None:
         super()
-        
+
 
     def evaluateMove(discardPile: list[Card], move: Card, rules, state, playerIndex):
         for card in discardPile:
@@ -30,6 +30,8 @@ class ExpectiMiniMax(PlayingClass):
               return 1
          else:
               return 1/(52-(len(state['seenCards'])-len(self.hand)))
+    def isTerminal(state):
+         return len(state['seenCards']) == 52
     def play(rules, hand, state): #returns a valid move
         pass
 
