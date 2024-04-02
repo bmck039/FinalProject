@@ -10,6 +10,7 @@ class MonteCarloPlayer(util.basePlayer):
     def __init__(self, action) -> None:
         super().__init__()
         self.action = action
+        self.hand = [action]
 
     def play(self, rules, hand, state):
         return self.action
@@ -32,7 +33,10 @@ class MonteCarloTreeSearchNode(): #https://ai-boson.github.io/mcts/
         return
     
     def untried_actions(self):
-        self._untried_actions = self.rules.validMoves(np.setdiff1d(self.rules.generateDeck(), self.hand + self.state["seenCards"]), self.state)
+        if len(self.state["discardPile"]) != self.playerIndex:
+            self._untried_actions = self.rules.validMoves(np.setdiff1d(self.rules.generateDeck(), self.hand + self.state["seenCards"]), self.state)
+        else:
+            self._untried_actions = self.hand
         return self._untried_actions
     
     def q(self):
@@ -46,7 +50,8 @@ class MonteCarloTreeSearchNode(): #https://ai-boson.github.io/mcts/
     def expand(self):
         
         action = self._untried_actions.pop()
-        next_state = self.rules.playerMove(action)
+        player = MonteCarloPlayer(action)
+        _, next_state = self.rules.playerTurnTransition(player, self.state)
         child_node = MonteCarloTreeSearchNode(
             next_state, parent=self, parent_action=action)
 
