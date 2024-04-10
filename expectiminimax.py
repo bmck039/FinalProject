@@ -1,5 +1,8 @@
 from util import Card
+import util
 from util import Suit
+import random
+import math
 from players import PlayingClass
 
 class ExpectiMiniMax(PlayingClass):
@@ -7,75 +10,24 @@ class ExpectiMiniMax(PlayingClass):
         super()
 
 
-    def evaluateMove(discardPile: list[Card], move: Card, rules, state, playerIndex):
-        for card in discardPile:
-          result =   rules.compareCard(move,card) # if card does not win trick it is a bad move
-          if result != 1:
-              return -1
-        if state["bids"][playerIndex]  >= state["tricks"][playerIndex]+1 : # if winning this trick puts the player over the bid number this is a bad move
-            return 1 # good move  otherwise
-        else:
-            return -1
 
-    def play(rules, hand, state) -> Card: #returns a valid move
-        discardPile = state["discardPile"]
-        playerIndex = len(discardPile)
+    def play(rules, hand, state,plaerIndex) -> Card: #returns a valid move
+       bestMoves= list()
+       moves= list()
+       for card in hand:
+            moves.append((card,ExpectiMiniMax.evaluateMove(card,rules,state,plaerIndex)))
+       maxScore = max(moves)
+       for (card,score) in moves:
+            if(maxScore == score):
+                 bestMoves.append(card)
+            return bestMoves       
+
             
     def probility(self,card,state):
-         if card  in state['discardPile']:
-              return 0
-         elif card in state['seenCards']:
-              return 1
-         elif card in self.hand:
-              return 1
-         else:
-              return 1/(52-(len(state['seenCards'])-len(self.hand)))
+        return 1/(52-(len(state['seenCards'])-len(self.hand)))
     def isTerminal(state):
-         return len(state['seenCards']) == 52
+         return len(state["seenCards"])== 52
     def play(rules, hand, state): #returns a valid move
         pass
 
-
-    # def updateModel(state, action, reward):
-
-
-def ExpectimaxAgent(gameState):
- 
-        value, move = maxValue(gameState, 0, 0)
-        return move
-        
-def maxValue(self, gameState, depth, turn):
-        agentIndex = turn % gameState.getNumAgents()
-        if (gameState.isWin() or (depth > (self.depth * gameState.getNumAgents()) - 1) or gameState.isLose()):
-            return self.evaluationFunction(gameState), None
-        v = float("-inf")
-        move = None
-        for action in gameState.getLegalActions(agentIndex):
-            successor = gameState.generateSuccessor(agentIndex, action)
-            v2, a2 = self.maxOrMin(successor, depth + 1, turn + 1)
-            if v2 > v:
-                v, move = v2, action
-        return v, move
-    
-def minValue(self, gameState, depth, turn):
-        agentIndex = turn % gameState.getNumAgents()
-        if (gameState.isWin() or (depth > (self.depth * gameState.getNumAgents()) - 1) or gameState.isLose()):
-            return self.evaluationFunction(gameState), None
-        v = float("inf")
-        move = None
-        numSuccessors = 0
-        total = 0
-        for action in gameState.getLegalActions(agentIndex):
-            successor = gameState.generateSuccessor(agentIndex, action)
-            v2, a2 = self.maxOrMin(successor, depth + 1, turn + 1)
-            total += v2
-            numSuccessors += 1
-        return (1/numSuccessors)*total, move
-    
-def maxOrMin(self, gameState, depth, turn):
-        agentIndex = turn % 4
-        if agentIndex == 0:
-            return self.maxValue(gameState, depth, turn)
-        else:
-            return self.minValue(gameState, depth, turn)
-        util.raiseNotDefined()
+def expectedMiniMax(state, depth,rule):

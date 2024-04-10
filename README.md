@@ -19,12 +19,18 @@ python play.py
 ## Resources: 
 - Bidding Algorithm: https://ecai2020.eu/papers/235_paper.pdf
 - Monte Carlo Tree Search: https://ai-boson.github.io/mcts/
+- Reinforcement Learning on Spades: https://cs229.stanford.edu/proj2021spr/report2/81999416.pdf
 
 ## ToDo
 - [ ] Complete Bidding Algorithm (AIPlayer.getBid(state)) in [players.py](/players.py)
 - [ ] Implement AIPlayer.play(state) in [players.py](/players.py)
   - [ ] Implement bidding nil
   - [x] Implement regular bidding
+- [ ] expectiminimax player agent
+- [ ] MCTS player agent
+- [ ] RL player agent
+- [ ] Tournament of different agents
+  - [ ] save results to CSV file for further analysis
 - [x] Make Spades object track points [util.py](/util.py)
 - [x] create isWon(state) method on Rules interface and implement in Spades object [util.py](/util.py)
 - [x] Allow Game to run turns until a win state in [util.py](/util.py), have [play.py](/play.py) use this method

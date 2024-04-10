@@ -14,6 +14,14 @@ class Suit(Enum):
 def subsetOfSuit(hand: list, suit: Suit):
     return list(filter(lambda x: x.suit == suit, hand))
 
+def listDiff(l1: list, l2: list) -> list:
+    result = []
+    for item in l1:
+        if item not in l2: result.append(item)
+    for item in l2:
+        if item not in l1: result.append(item)
+    return result
+
 class Card: #representation of a card
     def __init__(self, value, suit: Suit):
         self.value = value
@@ -134,7 +142,7 @@ class Spades(Rules): #implementation of Rules for the game Spades
         return move in Spades.validMoves(hand, gameState)
 
     def generateDeck():
-        return [Card(i, suit) for i in range(1, 13) for suit in list(Suit)]
+        return [Card(i, suit) for i in range(1, 14) for suit in list(Suit)]
 
     def generateHands(n: int) -> list[Card]:
         deck = Spades.generateDeck()
@@ -143,9 +151,9 @@ class Spades(Rules): #implementation of Rules for the game Spades
         return np.array_split(deck, n)
     
     def compareCards(c1: Card, c2: Card) -> int: #1 if c1 > c2, -1 if c1 < c2, 0 if indeterminate
-        if(c1.value == 0): return -1
+        if(c1.value == 0): return -1 #allows for null cards to be represented
         if(c2.value == 0): return 1
-        if(c1.suit == c2.suit): return 1 if c1.value < c2.value else -1
+        if(c1.suit == c2.suit): return 1 if c1.value > c2.value or c1.value == 1 else -1
         #if the suits aren't the same and one is a spade, the spade wins
         if(c1.suit == Suit.Spades): return 1
         if(c2.suit == Suit.Spades): return -1
@@ -208,35 +216,39 @@ class Spades(Rules): #implementation of Rules for the game Spades
         return state
     
     def playRound(players: list[Player], state: dict) -> dict:
-        orderedPlayers = players[state["start"] : -1] + players[0 : state["start"]]
+        numPlayers = len(players)
+        orderedPlayers = players[state["start"] : numPlayers] + players[0 : state["start"]]
         state["highestCard"] = Card(0, Suit.Hearts)
         for p in orderedPlayers:
             card, state = Spades.playerTurnTransition(p, state)
-        playerIndex = state["discardPile"].index(state["highestCard"])
-        state = Spades.roundEnd(players, state, playerIndex)
         return state
     
     def playerTurnTransition(p, state):
         card = p.play(state)
         while not (Spades.isValidMove(p.hand, state, card)):
-            p.returnCard(card)
+            print("invalid move ", card)
             card = p.play(state)
         state = Spades.playerMove(state, p, card)
         highestCard = state["highestCard"]
         if(Spades.compareCards(card, highestCard) > 0):
-            highestCard = state["highestCard"]
+            state["highestCard"] = card
+        if(len(state["discardPile"]) == 4):
+            playerIndex = state["discardPile"].index(state["highestCard"])
+            state = Spades.roundEnd(state, playerIndex)
         return card, state
 
-    def roundEnd(players, state, playerIndex):
+    def roundEnd(state, playerIndex):
         state["start"] = playerIndex
         state["tricks"][playerIndex] += 1
         state["discardPile"] = []
+        state["highestCard"] = Card(0, Suit.Hearts)
         return state
 
     def playerMove(state, p, card):
         state["discardPile"].append(card)
         state["seenCards"].append(card)
         if(card.suit == Suit.Spades and not state["spadesBroken"]): state["spadesBroken"] = True
+        print("removing ", card, " from hand ", p.hand)
         p.hand.remove(card)
         return state
     
@@ -253,7 +265,7 @@ class Spades(Rules): #implementation of Rules for the game Spades
         numTurns = 0
         for tricks in state["tricks"]:
             numTurns += tricks
-        return numTurns == 12
+        return numTurns == 13
     
     def isWon(state: dict) -> bool:
         for score in state["scores"]:
