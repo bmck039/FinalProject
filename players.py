@@ -17,6 +17,15 @@ class RandomPlayer(util.basePlayer): #plays randomly
     
     def getBid(self, state: dict) -> int:
         return random.randint(0, len(self.hand))
+    
+class ActionPlayer(util.basePlayer): # only plays a given action, useful for simulating potential opponent moves
+    def __init__(self, action) -> None:
+        super().__init__()
+        self.action = action
+        self.hand = [action]
+
+    def play(self, state):
+        return self.action
 
 # 0 (0.997) (0.966) (0.817)
 # 1 0.994 (0.942) *** (0.733) **
@@ -61,9 +70,6 @@ probabilityTable = [
 
 class PlayingClass(ABC): #interface for different methods of play
 
-    def __init__(self, hand) -> None:
-        self.hand = hand
-
     @abstractmethod
     def play(rules, hand, state):
         pass
@@ -77,7 +83,7 @@ class AIPlayer(util.basePlayer):
 
     def __init__(self, playingClass: PlayingClass) -> None:
         super()
-        self.playingCLass = playingClass(self.hand)
+        self.playingCLass = playingClass
     
     def getPrecomputedData(self, state: dict) -> tuple[list[list[float]], callable]:
         learnedFunction = lambda x, y: x 
