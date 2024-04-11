@@ -2,8 +2,6 @@ from enum import Enum
 import random
 import numpy as np
 from abc import ABC, abstractmethod
-import gymnasium as gym
-from gymnasium import spaces
 
 class Suit(Enum):
     Spades = 4
@@ -112,6 +110,7 @@ class Game(): #class representing a game. Written generally so all of the game-p
     def playUntilWin(self):
         while(not self.rules.isWon(self.state)):
             self.playTurn()
+            print(self.state["scores"])
 
 
     
@@ -184,8 +183,8 @@ class Spades(Rules): #implementation of Rules for the game Spades
         state = {}
         state["start"] = 0
         state["isWon"] = False
-        state["scores"] = [0 for n in range(numPlayers)]
-        state["bags"] = [0 for n in range(numPlayers)]
+        state["scores"] = [0 for n in range(numPlayers // 2)]
+        state["bags"] = [0 for n in range(numPlayers // 2)]
         state = Spades.setupRound(players, state)
         return state
     
@@ -193,6 +192,7 @@ class Spades(Rules): #implementation of Rules for the game Spades
         scoreChange = 0
         numTricks = state["tricks"][i]
         numBid = state["bids"][i]
+        teamIndex = i % 2
         scoreWeight = 10
         scoreSign = 1
         if numBid == 0: 
@@ -203,16 +203,18 @@ class Spades(Rules): #implementation of Rules for the game Spades
             scoreSign = -1 if numTricks < numBid else 1
             scoreChange += scoreWeight * numBid * scoreSign
         if(scoreSign > 0 or numBid == 0): #if you made your bid or bid nil
-            state["bags"][i] += numTricks - numBid
-        if(state["bags"][i] >= 5):
-            while(state["bags"][i] >= 5):
+            state["bags"][teamIndex] += numTricks - numBid
+        if(state["bags"][teamIndex] >= 5):
+            while(state["bags"][teamIndex] >= 5):
                 scoreChange -= 50
-                state["bags"][i] -= 5
+                state["bags"][teamIndex] -= 5
         return scoreChange
     
     def updateScores(state: dict) -> dict:
-        for i in range(len(state["tricks"])):
-            state["scores"][i] += Spades.scoreFromState(state, i)
+        for i in range(len(state["scores"])):
+            score = Spades.scoreFromState(state, i)
+            partnerScore = Spades.scoreFromState(state, i + 2)
+            state["scores"][i] += score + partnerScore
         return state
     
     def playRound(players: list[Player], state: dict) -> dict:
@@ -226,7 +228,7 @@ class Spades(Rules): #implementation of Rules for the game Spades
     def playerTurnTransition(p, state):
         card = p.play(state)
         while not (Spades.isValidMove(p.hand, state, card)):
-            print("invalid move ", card)
+            print("invalid move ", card, " for hand ", p.hand)
             card = p.play(state)
         state = Spades.playerMove(state, p, card)
         highestCard = state["highestCard"]
@@ -248,7 +250,6 @@ class Spades(Rules): #implementation of Rules for the game Spades
         state["discardPile"].append(card)
         state["seenCards"].append(card)
         if(card.suit == Suit.Spades and not state["spadesBroken"]): state["spadesBroken"] = True
-        print("removing ", card, " from hand ", p.hand)
         p.hand.remove(card)
         return state
     
