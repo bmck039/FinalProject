@@ -24,7 +24,6 @@ class MonteCarloTreeSearchNode(): #https://ai-boson.github.io/mcts/
         self._results[-1] = 0
         self._untried_actions = None
         self._untried_actions = self.untried_actions()
-        print(self.playerIndex)
         return
     
     def untried_actions(self):
@@ -69,7 +68,10 @@ class MonteCarloTreeSearchNode(): #https://ai-boson.github.io/mcts/
             action = self.rollout_policy(possible_moves)
             player = ActionPlayer(action)
             _, current_rollout_state = self.rules.playerTurnTransition(player, self.state)
-        result = self.rules.scoreFromState(current_rollout_state, self.playerIndex)
+        currentScore = self.rules.scoreFromState(current_rollout_state, self.playerIndex)
+        partnerIndex = (self.playerIndex + 2) % 4
+        partnerScore = self.rules.scoreFromState(current_rollout_state, partnerIndex)
+        result = currentScore + partnerScore
         result = 1 if result > 0 else -1
         return result
 
@@ -102,7 +104,7 @@ class MonteCarloTreeSearchNode(): #https://ai-boson.github.io/mcts/
         return current_node
 
     def best_action(self):
-        simulation_no = 100
+        simulation_no = 5000
         
         
         for i in range(simulation_no):
@@ -125,11 +127,9 @@ class MCTSPlay(PlayingClass):
         stateCopy = copy.deepcopy(state)
         discardPile = stateCopy["discardPile"]
         playerIndex = len(discardPile)
+        handCopy = copy.deepcopy(hand)
 
-        root = MonteCarloTreeSearchNode(stateCopy, rules, hand, playerIndex)
+        root = MonteCarloTreeSearchNode(stateCopy, rules, handCopy, playerIndex)
         selected_node = root.best_action()
         action = selected_node.parent_action
-        print(state)
-        print(action)
-        print(hand)
         return action

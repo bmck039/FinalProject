@@ -1,16 +1,25 @@
 import util
 import players
 import MCTS
+import expectiminimax
+import RL
 
-import random
+def play(rules, playerList):
+    game = util.Game(rules, playerList)
+    print(game.state["bids"])
+    game.playUntilWin()
+    # game.playTurn()
+    print(game.state["scores"])
+
+def tournament(rules, playerList, rounds):
+    for i in range(rounds):
+        play(rules, playerList)
 
 playersList = []
-for i in range(3):
-    playersList.append(players.AIPlayer(players.RandomPlay))
+playersList.append(players.AIPlayer(players.RandomPlay))
 playersList.append(players.AIPlayer(MCTS.MCTSPlay))
-
+playersList.append(players.AIPlayer(players.RandomPlay))
+playersList.append(players.AIPlayer(MCTS.MCTSPlay))
 #creates a game with 4 AI players
 
-game = util.Game(util.Spades, playersList)
-print(game.state["bids"])
-game.playTurn()
+play(util.Spades, playersList)
