@@ -3,6 +3,9 @@ from util import Game
 import gymnasium as gym
 from gymnasium import spaces
 
+def getCardFromIndex(action: int):
+    
+
 class SpadesGym(Game, gym.Env):
     def __init__(self) -> None:
         super(SpadesGym, self).__init__()
@@ -13,4 +16,4 @@ class SpadesGym(Game, gym.Env):
 
     def step(self, action: int) -> tuple[dict, float, bool, bool, dict[str]]:
         card = getCardFromIndex(action)
-        if( not Spades.isValidMove()): return 
+        if( not Spades.isValidMove(card) ): return -1
