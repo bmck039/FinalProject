@@ -2,8 +2,6 @@ from enum import Enum
 import random
 import numpy as np
 from abc import ABC, abstractmethod
-import gymnasium as gym
-from gymnasium import spaces
 
 class Suit(Enum):
     Spades = 4
