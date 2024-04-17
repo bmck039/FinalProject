@@ -27,10 +27,10 @@ python play.py
   - [ ] Implement bidding nil
   - [x] Implement regular bidding
 - [ ] expectiminimax player agent
-- [ ] MCTS player agent
+- [x] MCTS player agent
 - [ ] RL player agent
-- [ ] Tournament of different agents
-  - [ ] save results to CSV file for further analysis
+- [x] Tournament of different agents
+  - [x] save results to CSV file for further analysis
 - [x] Make Spades object track points [util.py](/util.py)
 - [x] create isWon(state) method on Rules interface and implement in Spades object [util.py](/util.py)
 - [x] Allow Game to run turns until a win state in [util.py](/util.py), have [play.py](/play.py) use this method

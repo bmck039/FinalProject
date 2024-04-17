@@ -1,8 +1,8 @@
 import util
 import players
 import MCTS
-import expectiminimax
-import RL
+# import expectiminimax
+# import RL
 
 def play(rules, playerList):
     game = util.Game(rules, playerList)

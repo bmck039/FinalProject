@@ -272,5 +272,5 @@ class Spades(Rules): #implementation of Rules for the game Spades
     
     def isWon(state: dict) -> bool:
         for score in state["scores"]:
-            if score >= 500: return True
+            if score >= 500 or score <= -200: return True
         return False
