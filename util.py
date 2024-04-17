@@ -110,7 +110,6 @@ class Game(): #class representing a game. Written generally so all of the game-p
     def playUntilWin(self):
         while(not self.rules.isWon(self.state)):
             self.playTurn()
-            print(self.state["scores"])
 
 
     
@@ -259,7 +258,7 @@ class Spades(Rules): #implementation of Rules for the game Spades
         state = Spades.updateScores(state)
         if(Spades.isWon(state)): 
             for i in range(len(players)):
-                players[i].update(state["score"])
+                players[i].update(state["scores"])
         return state
     
     def isTurnOver(state: dict) -> bool:
@@ -270,5 +269,5 @@ class Spades(Rules): #implementation of Rules for the game Spades
     
     def isWon(state: dict) -> bool:
         for score in state["scores"]:
-            if score >= 500: return True
+            if score >= 500 or score <= -200: return True
         return False
