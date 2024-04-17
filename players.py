@@ -1,3 +1,4 @@
+
 import random
 import util
 # import expectiminimax
@@ -83,14 +84,14 @@ class AIPlayer(util.basePlayer):
 
     def __init__(self, playingClass: PlayingClass) -> None:
         super()
-        self.playingCLass = playingClass
+        self.playingClass = playingClass
     
     def getPrecomputedData(self, state: dict) -> tuple[list[list[float]], callable]:
         learnedFunction = lambda x, y: x 
         return probabilityTable, learnedFunction
     
     def play(self, state: dict) -> Card:
-        return self.playingCLass.play(self.rules, self.hand, state)
+        return self.playingClass.play(self.rules, self.hand, state)
     
     def update(self, score: int):
         pass

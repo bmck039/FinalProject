@@ -2,8 +2,6 @@ from enum import Enum
 import random
 import numpy as np
 from abc import ABC, abstractmethod
-import gymnasium as gym
-from gymnasium import spaces
 
 class Suit(Enum):
     Spades = 4
@@ -112,7 +110,6 @@ class Game(): #class representing a game. Written generally so all of the game-p
     def playUntilWin(self):
         while(not self.rules.isWon(self.state)):
             self.playTurn()
-            print(self.state["scores"])
 
 
     
@@ -261,7 +258,7 @@ class Spades(Rules): #implementation of Rules for the game Spades
         state = Spades.updateScores(state)
         if(Spades.isWon(state)): 
             for i in range(len(players)):
-                players[i].update(state["score"])
+                players[i].update(state["scores"])
         return state
     
     def isTurnOver(state: dict) -> bool:
