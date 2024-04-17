@@ -27,7 +27,7 @@ python play.py
   - [ ] Implement bidding nil
   - [x] Implement regular bidding
 - [ ] expectiminimax player agent
-- [ ] MCTS player agent
+- [x] MCTS player agent
 - [ ] RL player agent
 - [ ] Tournament of different agents
   - [ ] save results to CSV file for further analysis

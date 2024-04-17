@@ -27,7 +27,12 @@ class ExpectiMiniMax(PlayingClass):
         return 1/(52-(len(state['seenCards'])-len(self.hand)))
     def isTerminal(state):
          return len(state["seenCards"])== 52
-    def play(rules, hand, state): #returns a valid move
-        pass
-
-def expectedMiniMax(state, depth,rule):
+    def expectedMiniMax()
+class Node:
+    def __init__(self, data,childen):
+        self.data = data
+        self.chidren = childen
+    def getChildren(self):
+        return self.chidren
+    def getData(self):
+        return self.data
