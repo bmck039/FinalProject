@@ -11,10 +11,6 @@ def evolve(pTable, iterations = 10000):
         for suit in util.Suit:
             # For each suit, sort all 4 players' cards by value
             suitHands = [sorted(util.subsetOfSuit(hands[i], suit), key=lambda x: util.Spades.offsetValue(x.asTuple()[0])) for i in range(4)]
-            untrimmedLength = len(suitHands[0])
-
-            # Skip iteration if suit is void
-            if untrimmedLength == 0: continue
 
             # Only consider 3 lowest player cards
             trimmedHand = suitHands[0][:3]
@@ -163,5 +159,5 @@ def normalize(pTable):
 #     else: return 1 - cbinom(n, p, 0, targetCount-1)
 
 # Uncomment to further evolve the probability table.
-print("Mooching off of your computer a little to evolve the probability table. :)")
-evolveToFile(100000, "probabilities.json")
+# print("Mooching off of your computer a little to evolve the probability table. :)")
+# evolveToFile(100000, "probabilities.json")

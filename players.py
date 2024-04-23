@@ -156,15 +156,27 @@ class AIPlayer(util.basePlayer):
         return max(0, round(tricks))
     
     def calcNilValue(self, PT, hand):
-        probNilForHand = 1
-        for suit in util.Suit:
-            suitCards = sorted(util.subsetOfSuit(hand, suit), key=lambda x: util.Spades.offsetValue(x.asTuple()[0])) # Sorted list of lowest 3 suit cards
-            numSuitCards = len(suitCards)
+        # Kind of hacky -- replaces probability table with big dictionary of precomputed values
+        PT = probabilities.readFromFile()
 
-            probNilForSuit = 1
-            if numSuitCards >= 1:
-                probNilForSuit = probabilities.readFromFile()[str(suit)][str(util.Spades.binaryFromHandSubset(suitCards))]
-            probNilForHand *= probNilForSuit
+        probNilForHand = 1
+        voidSuitPresent = False
+        for suit in util.Suit:
+            # Create a sorted list of suit cards
+            suitCards = sorted(util.subsetOfSuit(hand, suit), key=lambda x: util.Spades.offsetValue(x.asTuple()[0]))
+
+            # If void, update the flag. Else, multiply in nil probability for suit cards
+            if len(suitCards) >= 1: probNilForHand *= PT[str(suit)][str(util.Spades.binaryFromHandSubset(suitCards))]
+            else: voidSuitPresent = True
+            print(suitCards)
+            print(PT[str(suit)][str(util.Spades.binaryFromHandSubset(suitCards))])
+
+        print(probNilForHand)
+        # Apply bonus if the player has a void suit
+        if voidSuitPresent: 
+            probNilForHand *= 1.15
+            print(probNilForHand)
+        print("-----")
         return probNilForHand
 
     def reconsiderSpades(self, PT, hand, suits, subsetSpades):
@@ -192,6 +204,10 @@ class AIPlayer(util.basePlayer):
         nilValue = self.calcNilValue(PT, self.hand)
         #nilProb = SC(previousBids, nilValue) Impossible without learning from real games
         nilProb = nilValue
+        print("TEST1:", probabilities.readFromFile()["Suit.Diamonds"]["1024"])
+        print("TEST2:", probabilities.readFromFile()["Suit.Hearts"]["5120"])
+        print("TEST3:", probabilities.readFromFile()["Suit.Clubs"]["14"])
+        print("TEST4:", probabilities.readFromFile()["Suit.Spades"]["6673"])
         expNilScore = (nilProb - (1 - nilProb)) * 50
         nilThreshold = self.calcNilThreshold(regularTakes)
 
