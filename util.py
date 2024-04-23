@@ -157,6 +157,15 @@ class Spades(Rules): #implementation of Rules for the game Spades
         if(c2.suit == Suit.Spades): return -1
         #indeterminate
         return 0
+
+    def offsetValue(cardValue): #13 if cardValue = 1, cardValue-1 otherwise
+        return ((cardValue-2) % 13) + 1
+
+    def binaryFromHandSubset(hand):
+        result = 0
+        for card in hand:
+            result += 2 ** (Spades.offsetValue(card.value) - 1)
+        return result
     
     def dealCards(players: list[Player], state: dict) -> dict:
         numPlayers = len(players)

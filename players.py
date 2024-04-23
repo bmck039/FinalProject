@@ -1,4 +1,4 @@
-
+import probabilities
 import random
 import util
 # import expectiminimax
@@ -154,6 +154,18 @@ class AIPlayer(util.basePlayer):
         tricks += weight1 * diffFromAverage + weight2 * totalDistFromEqual
 
         return max(0, round(tricks))
+    
+    def calcNilValue(self, PT, hand):
+        probNilForHand = 1
+        for suit in util.Suit:
+            suitCards = sorted(util.subsetOfSuit(hand, suit), key=lambda x: util.Spades.offsetValue(x.asTuple()[0])) # Sorted list of lowest 3 suit cards
+            numSuitCards = len(suitCards)
+
+            probNilForSuit = 1
+            if numSuitCards >= 1:
+                probNilForSuit = probabilities.readFromFile()[str(suit)][str(util.Spades.binaryFromHandSubset(suitCards))]
+            probNilForHand *= probNilForSuit
+        return probNilForHand
 
     def reconsiderSpades(self, PT, hand, suits, subsetSpades):
         totalReconsideredValue = 0
@@ -177,12 +189,13 @@ class AIPlayer(util.basePlayer):
         PT, SC = self.getPrecomputedData(state)
 
         regularTakes = self.calcRegularTakes(PT, self.hand, previousBids)
-        # nilValue = self.calcNilValue(PT, self.hand)
-        # nilProb = SC(previousBids, nilValue)
-        # expNilScore = (nilProb - (1 - nilProb)) * 50
-        # nilThreshold = self.calcNilThreshold(regularTakes)
+        nilValue = self.calcNilValue(PT, self.hand)
+        #nilProb = SC(previousBids, nilValue) Impossible without learning from real games
+        nilProb = nilValue
+        expNilScore = (nilProb - (1 - nilProb)) * 50
+        nilThreshold = self.calcNilThreshold(regularTakes)
 
-        # return 0 if expNilScore > nilThreshold else regularTakes
-        return regularTakes
+        return 0 if expNilScore > nilThreshold else regularTakes
+        # return regularTakes
 
     
