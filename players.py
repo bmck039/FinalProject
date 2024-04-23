@@ -168,15 +168,10 @@ class AIPlayer(util.basePlayer):
             # If void, update the flag. Else, multiply in nil probability for suit cards
             if len(suitCards) >= 1: probNilForHand *= PT[str(suit)][str(util.Spades.binaryFromHandSubset(suitCards))]
             else: voidSuitPresent = True
-            print(suitCards)
-            print(PT[str(suit)][str(util.Spades.binaryFromHandSubset(suitCards))])
 
-        print(probNilForHand)
         # Apply bonus if the player has a void suit
         if voidSuitPresent: 
             probNilForHand *= 1.15
-            print(probNilForHand)
-        print("-----")
         return probNilForHand
 
     def reconsiderSpades(self, PT, hand, suits, subsetSpades):
@@ -204,10 +199,6 @@ class AIPlayer(util.basePlayer):
         nilValue = self.calcNilValue(PT, self.hand)
         #nilProb = SC(previousBids, nilValue) Impossible without learning from real games
         nilProb = nilValue
-        print("TEST1:", probabilities.readFromFile()["Suit.Diamonds"]["1024"])
-        print("TEST2:", probabilities.readFromFile()["Suit.Hearts"]["5120"])
-        print("TEST3:", probabilities.readFromFile()["Suit.Clubs"]["14"])
-        print("TEST4:", probabilities.readFromFile()["Suit.Spades"]["6673"])
         expNilScore = (nilProb - (1 - nilProb)) * 50
         nilThreshold = self.calcNilThreshold(regularTakes)
 
