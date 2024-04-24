@@ -1,10 +1,53 @@
+import util
 from util import Spades
 from util import Game
 import gymnasium as gym
 from gymnasium import spaces
 
-def getCardFromIndex(action: int):
-    
+# Returns an index [0, 51] that corresponds to the card's index in a binary vector.
+def getIndexFromCard(card: util.Card) -> int: 
+    value, suit = card.asTuple()
+    return ((suit.value-1)*13)+value-1
+
+# Returns a card that corresponds to the given index [0, 51].
+def getCardFromIndex(index: int) -> util.Card: 
+    value = (index % 13) + 1
+    suitValue = (index // 13) + 1
+    return util.Card(value, util.Suit(suitValue)) 
+
+# Returns an encoded list of 52 ints, where each digit represents whether a card was passed as the argument (0 = no, 1 = yes)
+def encodeCardBinary(card: util.Card) -> list[int]: 
+    result = [0] * 52 
+
+    result[getIndexFromCard(card)] = 1
+    return result
+
+# Returns an encoded list of 52 ints, where each digit represents whether a card was present in the given list (0 = no, 1 = yes)
+def encodeCardsBinary(cards: list[util.Card]) -> list[int]: 
+    result = [0] * 52 
+
+    for card in cards:
+        result[getIndexFromCard(card)] = 1
+    return result
+
+# Returns the first card decoded from the given binary list, or None if no cards are found.
+def decodeCardBinary(binary: list[int]) -> util.Card | None:
+    result = None
+
+    for i in range(52):
+        if binary[i] == 1:
+            result = getCardFromIndex(i)
+            break
+    return result
+
+# Returns a list of all cards decoded from the given binary list.
+def decodeCardsBinary(binary: list[int]) -> list[util.Card]:
+    result = []
+
+    for i in range(52):
+        if binary[i] == 1:
+            result.append(getCardFromIndex(i))
+    return result
 
 class SpadesGym(Game, gym.Env):
     def __init__(self) -> None:
