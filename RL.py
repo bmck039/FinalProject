@@ -5,8 +5,6 @@ from util import Suit
 import gymnasium as gym
 from gymnasium import spaces
 
-import math
-
 # Returns an index [0, 51] that corresponds to the card's index in a binary vector.
 def getIndexFromCard(card: util.Card) -> int: 
     value, suit = card.asTuple()
@@ -16,7 +14,7 @@ def getIndexFromCard(card: util.Card) -> int:
 def getCardFromIndex(index: int) -> util.Card: 
     value = (index % 13) + 1
     suitValue = (index // 13) + 1
-    return util.Card(value, util.Suit(suitValue)) 
+    return util.Card(value, Suit(suitValue)) 
 
 # Returns an encoded list of 52 ints, where each digit represents whether a card was passed as the argument (0 = no, 1 = yes)
 def encodeCardBinary(card: util.Card) -> list[int]: 
