@@ -20,13 +20,14 @@ python play.py
 - Bidding Algorithm: https://ecai2020.eu/papers/235_paper.pdf
 - Monte Carlo Tree Search: https://ai-boson.github.io/mcts/
 - Reinforcement Learning on Spades: https://cs229.stanford.edu/proj2021spr/report2/81999416.pdf
+- SIMPLE Reinforcement learning library: https://github.com/davidADSP/SIMPLE
 
 ## ToDo
 - [ ] Complete Bidding Algorithm (AIPlayer.getBid(state)) in [players.py](/players.py)
 - [ ] Implement AIPlayer.play(state) in [players.py](/players.py)
   - [ ] Implement bidding nil
   - [x] Implement regular bidding
-- [ ] expectiminimax player agent
+- [ ] ~~expectiminimax player agent~~
 - [x] MCTS player agent
 - [ ] RL player agent
 - [x] Tournament of different agents
@@ -35,3 +36,4 @@ python play.py
 - [x] create isWon(state) method on Rules interface and implement in Spades object [util.py](/util.py)
 - [x] Allow Game to run turns until a win state in [util.py](/util.py), have [play.py](/play.py) use this method
 - [x] Force the player to replay if their original move is not valid
+- [x] Generate graphs
