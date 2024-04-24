@@ -1,4 +1,4 @@
-
+import probabilities
 import random
 import util
 # import expectiminimax
@@ -154,6 +154,25 @@ class AIPlayer(util.basePlayer):
         tricks += weight1 * diffFromAverage + weight2 * totalDistFromEqual
 
         return max(0, round(tricks))
+    
+    def calcNilValue(self, PT, hand):
+        # Kind of hacky -- replaces probability table with big dictionary of precomputed values
+        PT = probabilities.readFromFile()
+
+        probNilForHand = 1
+        voidSuitPresent = False
+        for suit in util.Suit:
+            # Create a sorted list of suit cards
+            suitCards = sorted(util.subsetOfSuit(hand, suit), key=lambda x: util.Spades.offsetValue(x.asTuple()[0]))
+
+            # If void, update the flag. Else, multiply in nil probability for suit cards
+            if len(suitCards) >= 1: probNilForHand *= PT[str(suit)][str(util.Spades.binaryFromHandSubset(suitCards))]
+            else: voidSuitPresent = True
+
+        # Apply bonus if the player has a void suit
+        if voidSuitPresent: 
+            probNilForHand *= 1.15
+        return probNilForHand
 
     def reconsiderSpades(self, PT, hand, suits, subsetSpades):
         totalReconsideredValue = 0
@@ -177,12 +196,13 @@ class AIPlayer(util.basePlayer):
         PT, SC = self.getPrecomputedData(state)
 
         regularTakes = self.calcRegularTakes(PT, self.hand, previousBids)
-        # nilValue = self.calcNilValue(PT, self.hand)
-        # nilProb = SC(previousBids, nilValue)
-        # expNilScore = (nilProb - (1 - nilProb)) * 50
-        # nilThreshold = self.calcNilThreshold(regularTakes)
+        nilValue = self.calcNilValue(PT, self.hand)
+        #nilProb = SC(previousBids, nilValue) Impossible without learning from real games
+        nilProb = nilValue
+        expNilScore = (nilProb - (1 - nilProb)) * 50
+        nilThreshold = self.calcNilThreshold(regularTakes)
 
-        # return 0 if expNilScore > nilThreshold else regularTakes
-        return regularTakes
+        return 0 if expNilScore > nilThreshold else regularTakes
+        # return regularTakes
 
     
