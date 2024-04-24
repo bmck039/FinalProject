@@ -14,7 +14,7 @@ def play(rules, playerList):
     score = game.state["scores"]
     end = time.time()
     print(f"round finished in {end - start:.6f} seconds")
-    filename = playerList[0].playingClass.__name__ + "And" + playerList[2].playingClass.__name__ + "VS" + playerList[1].playingClass.__name__ + "And" + playerList[3].playingClass.__name__
+    filename = playerList[0].playingClass.__name__ + "VS" + playerList[1].playingClass.__name__
     with open(filename + ".csv", "a+") as file:
         if(score[1] > score[0]):
             winner = 1
