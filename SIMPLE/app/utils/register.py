@@ -28,7 +28,8 @@ def get_environment(env_name):
     except SyntaxError as e:
         print(e)
         raise Exception(f'Syntax Error for {env_name}!')
-    except:
+    except Exception as e:
+        print(e)
         raise Exception(f'Install the environment first using: \nbash scripts/install_env.sh {env_name}\nAlso ensure the environment is added to /utils/register.py')
     
 

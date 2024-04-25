@@ -193,6 +193,7 @@ class Spades(Rules): #implementation of Rules for the game Spades
         state["isWon"] = False
         state["scores"] = [0 for n in range(numPlayers // 2)]
         state["bags"] = [0 for n in range(numPlayers // 2)]
+        state["startRound"] = True
         state = Spades.setupRound(players, state)
         return state
     
@@ -235,6 +236,7 @@ class Spades(Rules): #implementation of Rules for the game Spades
     
     def playerTurnTransition(p, state):
         card = p.play(state)
+        if state["startRound"]: state["startRound"] = False
         while not (Spades.isValidMove(p.hand, state, card)):
             print("invalid move ", card, " for hand ", p.hand)
             card = p.play(state)

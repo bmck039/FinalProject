@@ -1,12 +1,15 @@
-import util
-from util import Spades
-from util import Game
-from util import Suit
+from . import util
+from .util import Spades
+from .util import Game
+from .util import Suit
 
-from players import ActionPlayer
+from .players import ActionPlayer
+from . import players
 
-import gymnasium as gym
-from gymnasium import spaces
+# import gymnasium as gym
+# from gymnasium import spaces
+import gym
+from gym import spaces
 import numpy as np
 
 # Returns an index [0, 51] that corresponds to the card's index in a binary vector.
@@ -55,14 +58,25 @@ def decodeCardsBinary(binary: list[int]) -> list[util.Card]:
     return result
 
 class SpadesGym(gym.Env):
-    def __init__(self, game) -> None:
+    def __init__(self, verbose = False, manual = False) -> None:
         super(SpadesGym, self).__init__()
 
-        self.game = game
+        self.name = 'spades'
+        self.manual = manual
+        self.verbose = verbose
+
+        playersList = []
+        playersList.append(players.AIPlayer(players.RandomPlay))
+        playersList.append(players.AIPlayer(players.RandomPlay))
+        playersList.append(players.AIPlayer(players.RandomPlay))
+        playersList.append(players.AIPlayer(players.RandomPlay))
+
+        self.game = Game(util.Spades, playersList)
         #the agent can play any of the 7 cards in its hand. the action returned will be a representation of the card to play
         self.action_space = spaces.Discrete(53)
-        #observation space is a binary list of length 52 representing the cards in current hand. a binary list of length 52 for the cards currently in the discard pile (same card representation as for the current hand), a list of 52 bits for cards seen, an int for the number your team bid, an int for the number of tricks you currently have, and an int for the number of bags your team has
-        self.observation_space = spaces.Tuple(spaces.MultiBinary(52), spaces.MultiBinary(52), spaces.MultiBinary(52), spaces.Discrete(14), spaces.Discrete(14), spaces.Discrete(14))
+        #observation space is a binary list of length 52 representing the cards in current hand. a binary list of length 52 for the cards currently in the discard pile (same card representation as for the current hand), a list of 52 bits for cards seen, a 14 bit one-hot encoding of the number your team bid, one for the number of tricks you currently have, and one for the number of bags your team has
+        # self.observation_space = spaces.Tuple([spaces.MultiBinary(52), spaces.MultiBinary(52), spaces.MultiBinary(52), spaces.MultiBinary(14), spaces.MultiBinary(14), spaces.MultiBinary(14)])
+        self.observation_space = spaces.MultiBinary(198)
         self.n_players = 4
         self.current_player_num = 0
     
@@ -73,10 +87,19 @@ class SpadesGym(gym.Env):
         discardEncoding = encodeCardsBinary(self.game.state["discardPile"])
         seenEncoding = encodeCardsBinary(self.game.state["seenCards"])
         teamIndex = self.current_player_num % 2
-        bagsScaled = self.game.state["bags"][teamIndex] / 13
-        tricksScaled = self.game.state["tricks"][teamIndex] / 13
-        bidScaled = self.game.state["bid"][self.current_player_num] / 13
-        obs = [handEncoding, discardEncoding, seenEncoding, bidScaled, tricksScaled, bagsScaled]
+        bagsEncoding = [0 for _ in range(14)]
+        bags = self.game.state["bags"][teamIndex]
+        bagsEncoding[bags] = 1
+
+        tricksEncoding = [0 for _ in range(14)]
+        tricks = self.game.state["tricks"][teamIndex]
+        tricksEncoding[tricks] = 1
+
+        bidEncoding = [0 for _ in range(14)]
+        bid = self.game.state["bids"][self.current_player_num]
+        bidEncoding[bid] = 1
+
+        obs = handEncoding + discardEncoding + seenEncoding + bidEncoding + tricksEncoding + bagsEncoding
         return np.array(obs)
     
     @property
@@ -96,7 +119,7 @@ class SpadesGym(gym.Env):
         
 
     def reset(self, seed=None, options=None):
-        super().reset(seed=seed, options=options)
+        # super().reset()
 
         # new game is created
         players = self.game.players
@@ -118,16 +141,20 @@ class SpadesGym(gym.Env):
             terminated = True
         else: 
             card = getCardFromIndex(action)
+            hand = self.game.players[playerIndex].hand
 
-            if not Spades.isValidMove(card):
+            if self.game.state["startRound"]:
+                self.game.state["highestCard"] = util.Card(0, Suit.Hearts)
+
+            if not Spades.isValidMove(hand, self.game.state, card):
                 reward[playerIndex] = -1
             else:
                 dummyPlayer = ActionPlayer(card)
                 _, self.game.state = Spades.playerTurnTransition(dummyPlayer, self.game.state)
                 self.game.players[self.current_player_num].hand.remove(card)
-                self.current_player_num = self.game.state["start"] if len(self.game.state["discardPile"]) > 0 else len(self.game.state["discardPile"])
+                self.current_player_num = self.game.state["start"] if len(self.game.state["discardPile"]) > 0 else (self.current_player_num + 1) % 4
         
-        return self.observation, reward, terminated, truncated, info
+        return self.observation, reward, terminated, info
 
     def close(self):
         pass

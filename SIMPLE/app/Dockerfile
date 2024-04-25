@@ -7,7 +7,7 @@ RUN apt-get -y install htop
 RUN apt-get -y install libpq-dev
 
 RUN apt-get update 
-RUN apt-get -y install cmake libopenmpi-dev python3-dev zlib1g-dev libgl1-mesa-dev
+RUN apt-get -y install cmake libopenmpi-dev python3 zlib1g-dev libgl1-mesa-dev
 
 RUN pip3 install --upgrade pip
 RUN pip3 install --upgrade setuptools
