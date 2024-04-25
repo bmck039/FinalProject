@@ -48,3 +48,9 @@ plt.clf()
 plt.boxplot(df[1], labels=names)
 
 plt.savefig("scores.png")
+
+results = zip(names, winrates)
+print("winrates:", list(results))
+
+results = zip(names, scores)
+print("score difference:", list(results))
