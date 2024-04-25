@@ -196,7 +196,7 @@ class Spades(Rules): #implementation of Rules for the game Spades
         state = Spades.setupRound(players, state)
         return state
     
-    def scoreFromState(state: dict, i: int) -> dict:
+    def scoreFromState(state: dict, i: int) -> int:
         scoreChange = 0
         numTricks = state["tricks"][i]
         numBid = state["bids"][i]
