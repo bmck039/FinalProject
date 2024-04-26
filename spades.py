@@ -76,14 +76,13 @@ class SpadesGym(gym.Env):
         self.action_space = spaces.Discrete(53)
         #observation space is a binary list of length 52 representing the cards in current hand. a binary list of length 52 for the cards currently in the discard pile (same card representation as for the current hand), a list of 52 bits for cards seen, a 14 bit one-hot encoding of the number your team bid, one for the number of tricks you currently have, and one for the number of bags your team has
         # self.observation_space = spaces.Tuple([spaces.MultiBinary(52), spaces.MultiBinary(52), spaces.MultiBinary(52), spaces.MultiBinary(14), spaces.MultiBinary(14), spaces.MultiBinary(14)])
-        self.observation_space = spaces.MultiBinary(198)
+        self.observation_space = spaces.MultiBinary(199)
         self.n_players = 4
         self.current_player_num = 0
     
     @property
     def observation(self):
-        p = self.current_player
-        handEncoding = encodeCardsBinary(p.hand)
+        handEncoding = self.legal_actions
         discardEncoding = encodeCardsBinary(self.game.state["discardPile"])
         seenEncoding = encodeCardsBinary(self.game.state["seenCards"])
         teamIndex = self.current_player_num % 2
@@ -99,8 +98,7 @@ class SpadesGym(gym.Env):
         bid = self.game.state["bids"][self.current_player_num]
         bidEncoding[bid] = 1
 
-        obs = handEncoding + discardEncoding + seenEncoding + bidEncoding + tricksEncoding + bagsEncoding
-        return np.array(obs)
+        return np.concatenate((handEncoding, discardEncoding, seenEncoding, bidEncoding, tricksEncoding, bagsEncoding))
     
     @property
     def current_player(self):
@@ -112,7 +110,7 @@ class SpadesGym(gym.Env):
         if Spades.isTurnOver(self.game.state):
             legalActions = [0] * 52 + [1] # have an ending action so that individual moves aren't assigned a score, just the play for that round
         else: 
-            legalMoves = Spades.validMoves(self.current_player)
+            legalMoves = Spades.validMoves(self.current_player.hand, self.game.state)
             legalActions = encodeCardsBinary(legalMoves) + [0] #not allowed to have ending action while game is ongoing
         return np.array(legalActions)
 
@@ -132,10 +130,10 @@ class SpadesGym(gym.Env):
 
     def step(self, action: int) -> tuple[dict, float, bool, bool, dict[str]]:
         playerIndex = self.current_player_num
-        truncated = False
         terminated = False
         info = {}
         reward = [0] * 4
+        # print("player:", self.current_player_num, "with action:", action)
         if action == 52: # ending action
             reward[playerIndex] = Spades.scoreFromState(self.game.state, playerIndex)
             terminated = True
@@ -151,8 +149,9 @@ class SpadesGym(gym.Env):
             else:
                 dummyPlayer = ActionPlayer(card)
                 _, self.game.state = Spades.playerTurnTransition(dummyPlayer, self.game.state)
+                # print(self.game.state)
                 self.game.players[self.current_player_num].hand.remove(card)
-                self.current_player_num = self.game.state["start"] if len(self.game.state["discardPile"]) > 0 else (self.current_player_num + 1) % 4
+                self.current_player_num = self.game.state["start"] if len(self.game.state["discardPile"]) == 0 else (self.current_player_num + 1) % 4
         
         return self.observation, reward, terminated, info
 

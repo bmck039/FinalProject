@@ -8,7 +8,7 @@ from tensorflow.keras.layers import BatchNormalization, Activation, Add, Dense, 
 from stable_baselines.common.policies import ActorCriticPolicy
 from stable_baselines.common.distributions import CategoricalProbabilityDistributionType, CategoricalProbabilityDistribution
 
-FEATURE_SIZE = 198
+FEATURE_SIZE = 199
 ACTIONS = 53
 
 
