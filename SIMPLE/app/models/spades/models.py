@@ -5,6 +5,8 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 from tensorflow.keras.layers import BatchNormalization, Activation, Add, Dense, Lambda
 
+from tensorflow.math import argmax
+
 from stable_baselines.common.policies import ActorCriticPolicy
 from stable_baselines.common.distributions import CategoricalProbabilityDistributionType, CategoricalProbabilityDistribution
 
@@ -45,7 +47,7 @@ class CustomPolicy(ActorCriticPolicy):
         return self.sess.run(self.value_flat, {self.obs_ph: obs})
 
 def split_input(obs, split):
-    return   obs[:,:-split], obs[:,-split:]
+    return obs, obs[split]
 
 def value_head(y):
     y = dense(y, FEATURE_SIZE)
@@ -58,10 +60,8 @@ def policy_head(y, legal_actions):
     y = dense(y, 64)
     y = dense(y, 64)
     policy = dense(y, ACTIONS, batch_norm = False, activation = 'softmax', name='pi')
-
-    mask = Lambda(lambda x: (1 - x) * -1e8)(legal_actions)   
     
-    policy = Add()([policy, mask])
+    policy = argmax(policy)
     return policy
 
 def features(obs):

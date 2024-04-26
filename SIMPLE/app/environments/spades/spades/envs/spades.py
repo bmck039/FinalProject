@@ -74,7 +74,7 @@ class SpadesGym(gym.Env):
         self.game = Game(util.Spades, playersList)
         #the agent can play any of the 7 cards in its hand. the action returned will be a representation of the card to play
         self.action_space = spaces.Discrete(53)
-        #observation space is a binary list of length 52 representing the cards in current hand. a binary list of length 52 for the cards currently in the discard pile (same card representation as for the current hand), a list of 52 bits for cards seen, a 14 bit one-hot encoding of the number your team bid, one for the number of tricks you currently have, and one for the number of bags your team has
+        #observation space is a binary list of length 53 representing the legal actions for the current hand. a binary list of length 52 for the cards currently in the discard pile (same card representation as for the current hand), a list of 52 bits for cards seen, a 14 bit one-hot encoding of the number your team bid, one for the number of tricks you currently have, and one for the number of bags your team has
         # self.observation_space = spaces.Tuple([spaces.MultiBinary(52), spaces.MultiBinary(52), spaces.MultiBinary(52), spaces.MultiBinary(14), spaces.MultiBinary(14), spaces.MultiBinary(14)])
         self.observation_space = spaces.MultiBinary(199)
         self.n_players = 4
