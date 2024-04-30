@@ -57,11 +57,12 @@ def value_head(y):
 
 
 def policy_head(y, legal_actions):
-    y = dense(y, 64)
-    y = dense(y, 64)
+    # y = dense(y, 64)
+    # y = dense(y, 64)
+    y = dense(y, 176)
     policy = dense(y, ACTIONS, batch_norm = False, activation = 'softmax', name='pi')
     
-    policy = argmax(policy)
+    # policy = argmax(policy)
     return policy
 
 def features(obs):
