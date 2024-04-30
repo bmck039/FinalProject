@@ -18,6 +18,13 @@ from players import PlayingClass
 
 from spadesEnv import getCardFromIndex
 
+# from stable_baselines import logger
+
+# import config
+
+# logger.configure(config.LOGDIR)
+# logger.set_level(config.DEBUG)
+
 
 env_name = "spades"
 

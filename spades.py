@@ -1,10 +1,14 @@
-from . import util
-from .util import Spades
-from .util import Game
-from .util import Suit
+import sys
 
-from .players import ActionPlayer
-from . import players
+sys.path.append(".....")
+
+import util
+from util import Spades
+from util import Game
+from util import Suit
+
+from players import ActionPlayer
+import players
 
 # import gymnasium as gym
 # from gymnasium import spaces

@@ -4,6 +4,8 @@ import MCTS
 # import expectiminimax
 import RL
 
+import os.path
+
 import time
 
 def play(rules, playerList):
@@ -14,8 +16,11 @@ def play(rules, playerList):
     score = game.state["scores"]
     end = time.time()
     print(f"round finished in {end - start:.6f} seconds")
+    filePath = "./output/"
     filename = playerList[0].playingClass.__name__ + "VS" + playerList[1].playingClass.__name__
-    with open(filename + ".csv", "a+") as file:
+    filename = filename + ".csv"
+    filePath = os.path.join(filePath, filename)
+    with open(filePath, "a+") as file:
         if(score[1] > score[0]):
             winner = 1
         else: winner = 0

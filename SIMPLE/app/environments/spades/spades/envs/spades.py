@@ -1,16 +1,20 @@
-from . import util
+import sys
 
-from .util import Spades
+sys.path.append(".....")
 
-from .util import Game
+import util
 
-from .util import Suit
+from util import Spades
+
+from util import Game
+
+from util import Suit
 
 
 
-from .players import ActionPlayer
+from players import ActionPlayer
 
-from . import players
+import players
 
 
 
@@ -223,6 +227,8 @@ class SpadesGym(gym.Env):
         else: 
 
             legalMoves = Spades.validMoves(self.current_player.hand, self.game.state)
+            # print("current hand", self.current_player.hand)
+            # print("legal moves", legalMoves)
 
             legalActions = encodeCardsBinary(legalMoves) + [0] #not allowed to have ending action while game is ongoing
 
@@ -230,7 +236,10 @@ class SpadesGym(gym.Env):
 
 
 
-        
+    # def rules_move(self):
+    #     actions = self.legalActions
+
+    #     return actions * 1 / len(actions)
 
 
 

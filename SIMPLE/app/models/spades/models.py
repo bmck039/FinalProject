@@ -47,7 +47,7 @@ class CustomPolicy(ActorCriticPolicy):
         return self.sess.run(self.value_flat, {self.obs_ph: obs})
 
 def split_input(obs, split):
-    return obs, obs[split]
+    return obs, obs[:split]
 
 def value_head(y):
     y = dense(y, FEATURE_SIZE)
