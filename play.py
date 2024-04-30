@@ -2,7 +2,7 @@ import util
 import players
 import MCTS
 # import expectiminimax
-# import RL
+import RL
 
 import time
 
@@ -29,10 +29,10 @@ def tournament(rules, playerList, rounds):
 
 playersList = []
 playersList.append(players.AIPlayer(players.RandomPlay))
-playersList.append(players.AIPlayer(MCTS.MCTSPlay))
+playersList.append(players.AIPlayer(RL.RLPlay))
 playersList.append(players.AIPlayer(players.RandomPlay))
-playersList.append(players.AIPlayer(MCTS.MCTSPlay))
+playersList.append(players.AIPlayer(RL.RLPlay))
 #creates a game with 4 AI players
 
-tournament(util.Spades, playersList, 600)
-# play(util.Spades, playersList)
+# tournament(util.Spades, playersList, 600)
+play(util.Spades, playersList)

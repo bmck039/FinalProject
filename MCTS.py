@@ -1,13 +1,13 @@
-from util import Card
-from util import Suit
-from players import PlayingClass
-import util
+from .util import Card
+from .util import Suit
+from .players import PlayingClass
+from .players import ActionPlayer
+from . import util
 
 import copy
 import numpy as np
 from collections import defaultdict
 
-from players import ActionPlayer
 
 class MonteCarloTreeSearchNode(): #https://ai-boson.github.io/mcts/
     def __init__(self, state, rules, hand, playerIndex, parent=None, parent_action=None):

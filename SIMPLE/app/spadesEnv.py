@@ -1,16 +1,16 @@
-from . import util
+import util
 
-from .util import Spades
+from util import Spades
 
-from .util import Game
+from util import Game
 
-from .util import Suit
+from util import Suit
 
 
 
-from .players import ActionPlayer
+from players import ActionPlayer
 
-from . import players
+import players
 
 
 

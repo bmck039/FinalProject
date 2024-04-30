@@ -127,6 +127,11 @@ class SpadesGym(gym.Env):
         observation = self.observation
         info = {}
         return observation, info
+    
+    def setState(self, state, hand):
+        self.game.state = state
+        self.current_player_num = len(state["discardPile"])
+        self.game.players[self.current_player_num].hand = hand
 
     def step(self, action: int) -> tuple[dict, float, bool, bool, dict[str]]:
         playerIndex = self.current_player_num
