@@ -2,18 +2,27 @@
 This represents the card game Spades, implemented in such a way as to make other games straightforward to create as well. [util.py](/util.py) contains the Game class, a Rules interface that controls how the game is played, a representation of Cards, and an interface for a Player. For convenience, a basePlayer class is provided for handling basic tasks involved with player creation. An explanation of the rules of Spades can be found [here](https://www.thesprucecrafts.com/spades-complete-card-game-rules-412490).
 
 ### Setup
-* #### Macos or Windows (without Nvidia GPU):
+  
+Install Docker: https://www.docker.com/products/docker-desktop/
+
 ```
-python -m pip install numpy torch stable-baselines3 gymnasium
+cd SIMPLE
+docker-compose up -d
+bash scripts/install_env.sh spades
 ```
-* #### Windows (With Nvidia GPU):
+
+### Training the RL Agent
+
+For N simultaneous training sessions:
+
 ```
-python -m pip install numpy torch stable-baselines3 gymnasium --index-url https://download.pytorch.org/whl/cu121
+cd SIMPLE
+docker-compose exec app mpirun -np N python3 train.py -e spades
 ```
 
 ### Run
 ```
-python play.py
+docker-compose exec app python3 play.py -a1 [model] -a2 [model]
 ```
 
 ## Resources: 
@@ -21,12 +30,13 @@ python play.py
 - Monte Carlo Tree Search: https://ai-boson.github.io/mcts/
 - Reinforcement Learning on Spades: https://cs229.stanford.edu/proj2021spr/report2/81999416.pdf
 - SIMPLE Reinforcement learning library: https://github.com/davidADSP/SIMPLE
+- RL Agent for Hearts: https://fse.studenttheses.ub.rug.nl/15440/1/Bachelor_Thesis_-_Maxiem_Wagen_1.pdf
 
 ## ToDo
-- [ ] Complete Bidding Algorithm (AIPlayer.getBid(state)) in [players.py](/players.py)
-- [ ] Implement AIPlayer.play(state) in [players.py](/players.py)
-  - [ ] Implement bidding nil
+- [x] Complete Bidding Algorithm (AIPlayer.getBid(state)) in [players.py](/players.py)
+  - [x] Implement bidding nil
   - [x] Implement regular bidding
+- [x] Implement AIPlayer.play(state) in [players.py](/players.py)
 - [ ] ~~expectiminimax player agent~~
 - [x] MCTS player agent
 - [ ] RL player agent

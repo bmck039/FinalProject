@@ -14,6 +14,8 @@ def sample_action(action_probs):
 
 
 def mask_actions(legal_actions, action_probs):
+    # print(legal_actions)
+    # print(action_probs)
     masked_action_probs = np.multiply(legal_actions, action_probs)
     masked_action_probs = masked_action_probs / np.sum(masked_action_probs)
     return masked_action_probs

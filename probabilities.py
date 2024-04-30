@@ -1,6 +1,6 @@
 import json
-import util
-from math import comb
+from . import util
+# from math import comb
 from enum import Enum
 
 def evolve(pTable, iterations = 10000):

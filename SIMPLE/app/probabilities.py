@@ -1,12 +1,10 @@
 import json
 
-from . import util
+import util
 
 # from math import comb
 
 from enum import Enum
-
-import os
 
 
 
@@ -148,7 +146,7 @@ def generate(iterations = 10000):
 
 
 
-def generateToFile(iterations = 10000, filepath = "environments/spades/spades/envs/probabilities.json", replace = False):
+def generateToFile(iterations = 10000, filepath = "probabilities.json", replace = False):
 
     pTable = generate(iterations)
 
@@ -164,7 +162,7 @@ def generateToFile(iterations = 10000, filepath = "environments/spades/spades/en
 
 
 
-def evolveToFile(iterations = 10000, filepath = "environments/spades/spades/envs/probabilities.json"):
+def evolveToFile(iterations = 10000, filepath = "probabilities.json"):
 
     pTable = readFromFile(filepath, False)
 
@@ -180,9 +178,7 @@ def evolveToFile(iterations = 10000, filepath = "environments/spades/spades/envs
 
 
 
-def readFromFile(filepath = "environments/spades/spades/envs/probabilities.json", asDecimal = True):
-
-    # print(os.getcwd())
+def readFromFile(filepath = "probabilities.json", asDecimal = True):
 
     file = open(filepath,"r")
 

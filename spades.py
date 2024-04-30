@@ -1,10 +1,14 @@
-from . import util
-from .util import Spades
-from .util import Game
-from .util import Suit
+import sys
 
-from .players import ActionPlayer
-from . import players
+sys.path.append(".....")
+
+import util
+from util import Spades
+from util import Game
+from util import Suit
+
+from players import ActionPlayer
+import players
 
 # import gymnasium as gym
 # from gymnasium import spaces
@@ -127,6 +131,11 @@ class SpadesGym(gym.Env):
         observation = self.observation
         info = {}
         return observation, info
+    
+    def setState(self, state, hand):
+        self.game.state = state
+        self.current_player_num = len(state["discardPile"])
+        self.game.players[self.current_player_num].hand = hand
 
     def step(self, action: int) -> tuple[dict, float, bool, bool, dict[str]]:
         playerIndex = self.current_player_num

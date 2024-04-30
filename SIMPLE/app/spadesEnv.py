@@ -1,7 +1,3 @@
-import sys
-
-sys.path.append(".....")
-
 import util
 
 from util import Spades
@@ -227,8 +223,6 @@ class SpadesGym(gym.Env):
         else: 
 
             legalMoves = Spades.validMoves(self.current_player.hand, self.game.state)
-            # print("current hand", self.current_player.hand)
-            # print("legal moves", legalMoves)
 
             legalActions = encodeCardsBinary(legalMoves) + [0] #not allowed to have ending action while game is ongoing
 
@@ -236,10 +230,7 @@ class SpadesGym(gym.Env):
 
 
 
-    # def rules_move(self):
-    #     actions = self.legalActions
-
-    #     return actions * 1 / len(actions)
+        
 
 
 
@@ -291,9 +282,8 @@ class SpadesGym(gym.Env):
 
         if action == 52: # ending action
 
-            for _ in range(4):
-                reward[playerIndex] = Spades.scoreFromState(self.game.state, playerIndex)
-                playerIndex = (playerIndex + 1) % 4
+            reward[playerIndex] = Spades.scoreFromState(self.game.state, playerIndex)
+
             terminated = True
 
         else: 
@@ -338,7 +328,7 @@ class SpadesGym(gym.Env):
 
 
 
-    def render(self, mode="human"):
+    def render(self):
 
         pass
 

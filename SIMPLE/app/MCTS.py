@@ -1,10 +1,12 @@
-from .util import Card
+from util import Card
 
-from .util import Suit
+from util import Suit
 
-from .players import PlayingClass
+from players import PlayingClass
 
-from . import util
+from players import ActionPlayer
+
+import util
 
 
 
@@ -15,8 +17,6 @@ import numpy as np
 from collections import defaultdict
 
 
-
-from players import ActionPlayer
 
 
 
