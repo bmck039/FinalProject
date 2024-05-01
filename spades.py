@@ -144,7 +144,9 @@ class SpadesGym(gym.Env):
         reward = [0] * 4
         # print("player:", self.current_player_num, "with action:", action)
         if action == 52: # ending action
-            reward[playerIndex] = Spades.scoreFromState(self.game.state, playerIndex)
+            for _ in range(4):
+                reward[playerIndex] = Spades.scoreFromState(self.game.state, playerIndex)
+                playerIndex = (playerIndex + 1) % 4
             terminated = True
         else: 
             card = getCardFromIndex(action)
@@ -167,5 +169,5 @@ class SpadesGym(gym.Env):
     def close(self):
         pass
 
-    def render(self):
+    def render(self, mode="None"):
         pass

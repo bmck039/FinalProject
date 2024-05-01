@@ -291,8 +291,9 @@ class SpadesGym(gym.Env):
 
         if action == 52: # ending action
 
-            reward[playerIndex] = Spades.scoreFromState(self.game.state, playerIndex)
-
+            for _ in range(4):
+                reward[playerIndex] = Spades.scoreFromState(self.game.state, playerIndex)
+                playerIndex = (playerIndex + 1) % 4
             terminated = True
 
         else: 
