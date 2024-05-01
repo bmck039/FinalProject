@@ -337,7 +337,7 @@ class SpadesGym(gym.Env):
 
 
 
-    def render(self):
+    def render(self, mode="human"):
 
         pass
 
