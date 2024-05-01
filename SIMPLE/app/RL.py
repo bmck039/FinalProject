@@ -34,11 +34,11 @@ env = get_environment(env_name)()
 
 
 
-# ppo_model = load_model(env, 'best_model.zip')
+ppo_model = load_model(env, 'best_model.zip')
 
 
 
-ppo_model = load_model(env, 'base.zip')
+# ppo_model = load_model(env, 'base.zip')
 
 ppo_agent = Agent('best_model', ppo_model)
 
