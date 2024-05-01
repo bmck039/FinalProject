@@ -66,21 +66,21 @@ def tournament(rules, playerList, rounds):
 
 
 
-playersList = []
+# playersList = []
 
-playersList.append(players.AIPlayer(players.RandomPlay))
+# playersList.append(players.AIPlayer(players.RandomPlay))
 
-playersList.append(players.AIPlayer(RL.RLPlay))
+# playersList.append(players.AIPlayer(RL.RLPlay))
 
-playersList.append(players.AIPlayer(players.RandomPlay))
+# playersList.append(players.AIPlayer(players.RandomPlay))
 
-playersList.append(players.AIPlayer(RL.RLPlay))
+# playersList.append(players.AIPlayer(RL.RLPlay))
 
 #creates a game with 4 AI players
 
 
 
-tournament(util.Spades, playersList, 600)
+# tournament(util.Spades, playersList, 600)
 
 playersList = []
 
@@ -93,3 +93,4 @@ playersList.append(players.AIPlayer(MCTS.MCTSPlay))
 playersList.append(players.AIPlayer(RL.RLPlay))
 
 # play(util.Spades, playersList)
+tournament(util.Spades, playersList, 40)
