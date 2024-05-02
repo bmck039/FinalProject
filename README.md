@@ -22,8 +22,22 @@ docker-compose exec app mpirun -np N python3 train.py -e spades
 
 ### Run
 ```
-docker-compose exec app python3 play.py -a1 [model] -a2 [model]
+docker-compose exec app python3 play.py -a [model1] [model2] [model3] [model4] -g [NumGames]
 ```
+or
+```
+docker-compose exec app python3 play.py -a [model1] [model2] -g [NumGames]
+```
+
+-g parameter is optional, defaults to 1
+
+## Results
+All data can be found in .csv files contained within ./SIMPLE/app/output/
+In addition, it contains the following two graphs:
+
+!["winrates"](./SIMPLE/app/output/winrates.png)
+
+!["scores"](./SIMPLE/app/output/scores.png)
 
 ## Resources: 
 - Bidding Algorithm: https://ecai2020.eu/papers/235_paper.pdf
