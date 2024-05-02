@@ -12,7 +12,7 @@ import RL
 
 import os.path
 
-
+import argparse
 
 import time
 
@@ -78,19 +78,46 @@ def tournament(rules, playerList, rounds):
 
 #creates a game with 4 AI players
 
+def parseAgent(agent):
+    if(agent == "random"):
+        return players.AIPlayer(players.RandomPlay)
+    if(agent == "mcts"):
+        return players.AIPlayer(MCTS.MCTSPlay)
+    if(agent == "rl"):
+        return players.AIPlayer(RL.RLPlay)
+    raise NotImplementedError("We were unable to find the model {model}")
+
+def playGames(args):
+    playerList = []
+
+    if(len(args.agents) != 4 or len(args.agents) != 2):
+        raise ValueError("Incorrect number of models specified, must be 2 or 4")
+
+    for agent in args.agents:
+        playerList.append(parseAgent(agent))
+
+    if(len(playerList) == 2):
+        for agent in args.agents:
+            playerList.append(parseAgent(agent))
+
+    tournament(util.Spades, playerList, args.games)
+
+def cli():
+    formatter_class = argparse.ArgumentDefaultsHelpFormatter
+    parser = argparse.ArgumentParser(formatter_class=formatter_class)
+
+    parser.add_argument("--agents","-a", nargs = '+', type=str, default = ['random', 'random', 'random', 'random']
+                , help="Player Agents (random, mcts, rl)")
+    
+    parser.add_argument("--games", "-g", type = int, default = 1
+                , help="Number of games to play)")
+    
+    args = parser.parse_args()
+
+    # Enter main
+    playGames(args)
+    return
 
 
-# tournament(util.Spades, playersList, 600)
 
-playersList = []
-
-playersList.append(players.AIPlayer(MCTS.MCTSPlay))
-
-playersList.append(players.AIPlayer(RL.RLPlay))
-
-playersList.append(players.AIPlayer(MCTS.MCTSPlay))
-
-playersList.append(players.AIPlayer(RL.RLPlay))
-
-# play(util.Spades, playersList)
-tournament(util.Spades, playersList, 40)
+cli()
