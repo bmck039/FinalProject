@@ -37,6 +37,14 @@ for i in range(len(files)):
     names.append(name)
     dfs.append(df[1])
 
+ax = plt.gca()
+
+plt.figure(figsize=(7, 5))
+
+plt.title("Score Differential Distributions")
+
+plt.ylabel("Score Differential")
+
 plt.boxplot(dfs, labels=names)
 
 print(names)
@@ -47,6 +55,12 @@ plt.clf()
 
 ax = plt.gca()
 ax.set_ylim([0, 1])
+
+# plt.figure(figsize=(7, 5))
+
+plt.title("Average Win Rate Across Models")
+
+plt.ylabel("Win Rate")
 
 plt.scatter(xAxes, winrates)
 
