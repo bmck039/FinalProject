@@ -32,7 +32,7 @@ docker-compose exec app python3 play.py -a [model1] [model2] -g [NumGames]
 -g parameter is optional, defaults to 1
 
 ## Results
-All data can be found in .csv files contained within ./SIMPLE/app/output/
+All data can be found in .csv files contained within [/SIMPLE/app/output/](SIMPLE/app/output/)
 In addition, it contains the following two graphs:
 
 !["winrates"](./SIMPLE/app/output/winrates.png)
@@ -53,7 +53,7 @@ In addition, it contains the following two graphs:
 - [x] Implement AIPlayer.play(state) in [players.py](/players.py)
 - [ ] ~~expectiminimax player agent~~
 - [x] MCTS player agent
-- [ ] RL player agent
+- [x] RL player agent
 - [x] Tournament of different agents
   - [x] save results to CSV file for further analysis
 - [x] Make Spades object track points [util.py](/util.py)
